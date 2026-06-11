@@ -1,0 +1,19 @@
+Feature Category,Functionality,Frontend Status,Backend Sync,Result
+Authentication,Google Sign-In,Account Picker Dialog,Handshake Logic,PASSED
+Authentication,Mail Login,Google-Style UI,Verifying Token,PASSED
+Authentication,Mobile Auth,6-Digit Real-time OTP,Phone Handshake,PASSED
+Authentication,Registration,Multi-field validation,Firebase PUSH,PASSED
+Dashboard,AI Tool Grid,Continuous Floating,Animated Entry,PASSED
+AI Scanner,Leaf Verification,AI Validation Logic,Leaf-only check,PASSED
+AI Scanner,Disease Detection,Result Card View,Treatment Mapping,PASSED
+AI Scanner,Fertilizer Rec.,Treatment Selection,Firebase SYNC,PASSED
+Market Portal,20+ Crop Prices,Scrollable Price List,Trend Analytics,PASSED
+Market Portal,Mandi Search,Real-time Filtering,Local Search,PASSED
+Welfare Portal,Govt Schemes,15+ Detailed List,Application UI,PASSED
+Welfare Portal,Scheme Details,Deep Eligibility Docs,Dynamic Content,PASSED
+Personalization,Farmer Profile,Analytics Dashboard,User Data Fetch,PASSED
+Personalization,Edit Profile,Interactive Forms,Firebase UPDATE,PASSED
+Personalization,Multi-Language,7 Regional Scripts,Global Manager,PASSED
+Management,Smart Irrigation,Moisture Monitor,Schedule Logic,PASSED
+Navigation,Back Logic,Fixed Inset Buttons,100% Connected,PASSED
+Web Portal,Web Simulator,Full UI Mirroring,Local Host,PASSED
