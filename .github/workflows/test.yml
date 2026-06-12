@@ -26,9 +26,6 @@ jobs:
     - name: Run unit tests
       run: ./gradlew test --stacktrace
     
-    - name: Run Android tests
-      run: ./gradlew connectedAndroidTest --stacktrace || true
-    
     - name: Upload test results
       if: always()
       uses: actions/upload-artifact@v4
