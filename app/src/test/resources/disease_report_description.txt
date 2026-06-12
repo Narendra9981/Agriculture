@@ -1,0 +1,8 @@
+Disease Report CSV Export Test Description
+
+This test resource validates the sample CSV used for Excel-compatible disease report export.
+It verifies that the exported report contains the expected header row, crop diagnosis details,
+health analytics, treatment recommendations, and prevention guidance.
+
+The sample file is located in app/src/test/resources/disease_report_sample.csv and is used
+only for unit test validation in the app testing folder.
