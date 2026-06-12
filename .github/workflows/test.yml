@@ -6,6 +6,7 @@ on:
   pull_request:
     branches: [ main, master, develop ]
 
+# Automated tests configuration - All test cases must pass
 jobs:
   test:
     runs-on: ubuntu-latest
