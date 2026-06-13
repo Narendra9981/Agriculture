@@ -23,6 +23,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
+import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
 import com.example.farmers.ui.theme.*
 
@@ -41,65 +44,99 @@ fun WelcomeScreen(
     )
 
     if (showGooglePicker) {
-        val accountScrollState = rememberScrollState()
-        AlertDialog(
+        Dialog(
             onDismissRequest = { showGooglePicker = false },
-            title = {
-                Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
-                    Text(
-                        "Choose an account", 
-                        style = MaterialTheme.typography.headlineSmall.copy(
-                            fontWeight = FontWeight.Normal,
-                            color = Color(0xFF202124),
-                            fontSize = 24.sp
-                        ),
-                        textAlign = TextAlign.Center
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text("to continue to ", style = MaterialTheme.typography.bodyLarge.copy(color = Color(0xFF3C4043)))
-                        Text("AgriBot", style = MaterialTheme.typography.bodyLarge.copy(color = Color(0xFF1A73E8), fontWeight = FontWeight.Medium))
-                    }
-                }
-            },
-            text = {
+            properties = DialogProperties(usePlatformDefaultWidth = false)
+        ) {
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth(0.92f)
+                    .wrapContentHeight(),
+                shape = RoundedCornerShape(8.dp),
+                color = Color.White,
+                tonalElevation = 8.dp
+            ) {
                 Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .heightIn(max = 450.dp)
-                        .verticalScroll(accountScrollState)
+                    modifier = Modifier.fillMaxWidth()
                 ) {
+                    // Header Section
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 36.dp, bottom = 24.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        // Google "G" logo
+                        AsyncImage(
+                            model = "https://www.gstatic.com/images/branding/product/1x/googleg_48dp.png",
+                            contentDescription = null,
+                            modifier = Modifier.size(24.dp)
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Text(
+                            "Choose an account",
+                            style = MaterialTheme.typography.headlineSmall.copy(
+                                fontWeight = FontWeight.Normal,
+                                color = Color(0xFF202124),
+                                fontSize = 22.sp
+                            )
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Row {
+                            Text(
+                                "to continue to ",
+                                style = MaterialTheme.typography.bodyLarge.copy(
+                                    color = Color(0xFF3C4043),
+                                    fontSize = 16.sp
+                                )
+                            )
+                            Text(
+                                "AgriBot",
+                                style = MaterialTheme.typography.bodyLarge.copy(
+                                    color = Color(0xFF1A73E8),
+                                    fontWeight = FontWeight.Medium,
+                                    fontSize = 16.sp
+                                )
+                            )
+                        }
+                    }
+
                     HorizontalDivider(color = Color(0xFFDADCE0), thickness = 0.5.dp)
+
+                    // Account List Section
                     googleAccounts.forEach { (name, email) ->
                         Surface(
-                            onClick = { 
+                            onClick = {
                                 showGooglePicker = false
-                                onGoogleClick(email) 
+                                onGoogleClick(email)
                             },
                             modifier = Modifier.fillMaxWidth(),
                             color = Color.Transparent
                         ) {
                             Row(
-                                modifier = Modifier.padding(vertical = 14.dp, horizontal = 4.dp),
+                                modifier = Modifier.padding(vertical = 12.dp, horizontal = 24.dp),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Box(
-                                    modifier = Modifier.size(36.dp).background(
-                                        when(name.take(1).uppercase()) {
-                                            "K" -> Color(0xFF1A73E8)
-                                            "S" -> Color(0xFF7B1FA2)
-                                            else -> Color(0xFF0F9D58)
-                                        }, 
-                                        CircleShape
-                                    ),
+                                    modifier = Modifier
+                                        .size(32.dp)
+                                        .background(
+                                            if (name.contains("NARENDRA")) Color(0xFF1A73E8) else Color(0xFF0F9D58),
+                                            CircleShape
+                                        ),
                                     contentAlignment = Alignment.Center
                                 ) {
-                                    Text(name.take(1).uppercase(), color = Color.White, fontWeight = FontWeight.Medium, fontSize = 16.sp)
+                                    Text(
+                                        name.take(1).uppercase(),
+                                        color = Color.White,
+                                        fontWeight = FontWeight.Medium,
+                                        fontSize = 14.sp
+                                    )
                                 }
                                 Spacer(modifier = Modifier.width(16.dp))
                                 Column {
                                     Text(
-                                        name, 
+                                        name,
                                         style = MaterialTheme.typography.bodyLarge.copy(
                                             fontWeight = FontWeight.Medium,
                                             color = Color(0xFF3C4043),
@@ -107,7 +144,7 @@ fun WelcomeScreen(
                                         )
                                     )
                                     Text(
-                                        email, 
+                                        email,
                                         style = MaterialTheme.typography.bodyMedium.copy(
                                             color = Color(0xFF70757A),
                                             fontSize = 12.sp
@@ -119,25 +156,32 @@ fun WelcomeScreen(
                         HorizontalDivider(color = Color(0xFFDADCE0), thickness = 0.5.dp)
                     }
 
-                    // Use another account option
+                    // Use another account section
                     Surface(
                         onClick = { showGooglePicker = false },
                         modifier = Modifier.fillMaxWidth(),
                         color = Color.Transparent
                     ) {
                         Row(
-                            modifier = Modifier.padding(vertical = 14.dp, horizontal = 4.dp),
+                            modifier = Modifier.padding(vertical = 12.dp, horizontal = 24.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Box(
-                                modifier = Modifier.size(36.dp).border(1.dp, Color(0xFFDADCE0), CircleShape),
+                                modifier = Modifier
+                                    .size(32.dp)
+                                    .border(0.5.dp, Color(0xFFDADCE0), CircleShape),
                                 contentAlignment = Alignment.Center
                             ) {
-                                Icon(Icons.Default.AccountCircle, null, modifier = Modifier.size(24.dp), tint = Color(0xFF5F6368))
+                                Icon(
+                                    imageVector = Icons.Default.AccountCircle,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(20.dp),
+                                    tint = Color(0xFF5F6368)
+                                )
                             }
                             Spacer(modifier = Modifier.width(16.dp))
                             Text(
-                                "Use another account", 
+                                "Use another account",
                                 style = MaterialTheme.typography.bodyLarge.copy(
                                     fontWeight = FontWeight.Medium,
                                     color = Color(0xFF3C4043),
@@ -147,24 +191,36 @@ fun WelcomeScreen(
                         }
                     }
                     HorizontalDivider(color = Color(0xFFDADCE0), thickness = 0.5.dp)
-                    
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Text(
-                        "Before using this app, you can review AgriBot's privacy policy and terms of service.",
-                        style = MaterialTheme.typography.bodySmall.copy(color = Color(0xFF70757A), fontSize = 11.sp),
-                        lineHeight = 16.sp
-                    )
+
+                    // Footer Section
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(24.dp)
+                    ) {
+                        Text(
+                            "Before using this app, you can review AgriBot's privacy policy and terms of service.",
+                            style = MaterialTheme.typography.bodySmall.copy(
+                                color = Color(0xFF70757A),
+                                fontSize = 11.sp,
+                                lineHeight = 16.sp
+                            )
+                        )
+                        Spacer(modifier = Modifier.height(24.dp))
+                        TextButton(
+                            onClick = { showGooglePicker = false },
+                            modifier = Modifier.align(Alignment.End)
+                        ) {
+                            Text(
+                                "Cancel",
+                                color = Color(0xFF1A73E8),
+                                fontWeight = FontWeight.Medium
+                            )
+                        }
+                    }
                 }
-            },
-            confirmButton = {},
-            dismissButton = {
-                TextButton(onClick = { showGooglePicker = false }) {
-                    Text("Cancel", color = Color(0xFF1A73E8), fontWeight = FontWeight.Medium)
-                }
-            },
-            shape = RoundedCornerShape(8.dp),
-            containerColor = Color.White
-        )
+            }
+        }
     }
 
     Box(
@@ -321,34 +377,28 @@ fun WelcomeScreen(
                 // Google Social
                 Surface(
                     onClick = { showGooglePicker = true },
-                    modifier = Modifier.fillMaxWidth().height(52.dp),
-                    shape = RoundedCornerShape(8.dp),
-                    color = Color(0xFFF2F2F2),
-                    border = BorderStroke(1.dp, Color(0xFFDADCE0).copy(alpha = 0.5f))
+                    modifier = Modifier.fillMaxWidth().height(44.dp),
+                    shape = RoundedCornerShape(4.dp),
+                    color = Color.White,
+                    border = BorderStroke(1.dp, Color(0xFFDADCE0)),
+                    shadowElevation = 0.5.dp
                 ) {
                     Row(
-                        modifier = Modifier.fillMaxSize(),
+                        modifier = Modifier.fillMaxSize().padding(horizontal = 12.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Center
                     ) {
-                        // Official-looking Google "G" icon simulation
-                        Box(
-                            modifier = Modifier.size(20.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.AccountCircle, // Placeholder for G
-                                contentDescription = null,
-                                modifier = Modifier.size(20.dp),
-                                tint = Color(0xFF4285F4) // Google Blue
-                            )
-                        }
-                        Spacer(modifier = Modifier.width(12.dp))
+                        AsyncImage(
+                            model = "https://www.gstatic.com/images/branding/product/1x/googleg_48dp.png",
+                            contentDescription = null,
+                            modifier = Modifier.size(18.dp)
+                        )
+                        Spacer(modifier = Modifier.width(10.dp))
                         Text(
-                            "Continue with Google", 
-                            fontWeight = FontWeight.Medium, 
+                            "Continue with Google",
+                            fontWeight = FontWeight.Medium,
                             color = Color(0xFF3C4043),
-                            fontSize = 15.sp,
+                            fontSize = 14.sp,
                             letterSpacing = 0.2.sp
                         )
                     }
