@@ -7,7 +7,7 @@ def generate_summary():
         return
 
     summary_content = """
-# 📊 A2ZEE E2E Test Suite Summary
+# 📊 AgriBot E2E Test Suite Summary
 
 Here is the real-time breakdown of the Selenium automated test run:
 
