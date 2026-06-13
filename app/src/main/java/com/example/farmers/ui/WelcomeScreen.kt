@@ -39,8 +39,12 @@ fun WelcomeScreen(
         "kanamalanarendra1162.sse@saveeth.com",
         "arjun.singh@gmail.com",
         "narendra.farmers@gmail.com",
+        "narendra.agribot@gmail.com",
+        "farmer.arjun@outlook.com",
         "contact@agribot.ai",
-        "support@farmersapp.in"
+        "support@farmersapp.in",
+        "marketing@agribot.ai",
+        "info@agriculture.org"
     )
 
     if (showGooglePicker) {
