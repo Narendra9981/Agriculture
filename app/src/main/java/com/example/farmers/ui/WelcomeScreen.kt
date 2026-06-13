@@ -36,14 +36,8 @@ fun WelcomeScreen(
     var showGooglePicker by remember { mutableStateOf(false) }
     
     val googleAccounts = listOf(
-        Pair("Kanamala Narendra", "kanamalanarendra950@gmail.com"),
-        Pair("kanamala manideep", "manideepkanamala@gmail.com"),
-        Pair("Clg Saveetha", "saveethaclg0@gmail.com"),
-        Pair("Kanamala Narendra", "narendrakanamala7@gmail.com"),
         Pair("KANAMALA NARENDRA", "kanamalanarendra1162.sse@saveetha.com"),
-        Pair("Kanamala Narendra", "narendrakanamala53@gmail.com"),
-        Pair("Saveetha clg Saveetha clg", "ssaveethaclg0@gmail.com"),
-        Pair("Kanamala Nani", "kanamalanani4@gmail.com")
+        Pair("Arjun Singh", "arjun.singh@gmail.com")
     )
 
     if (showGooglePicker) {
