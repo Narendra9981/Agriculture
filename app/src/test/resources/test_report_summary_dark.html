@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>A2ZEE E2E Test Suite Summary - Dark</title>
+  <style>
+    :root{--bg:#0b0f14;--card:#0f1720;--muted:#94a3b8;--accent:#1f8f6a;--border:#1f2937}
+    body{font-family:Inter,Segoe UI,Roboto,Arial;background:linear-gradient(180deg,#06080a,#0b0f14);color:#e6eef3;margin:0;padding:28px}
+    .header{display:flex;align-items:center;gap:12px}
+    h1{margin:0;font-size:22px}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:18px;margin-top:18px;box-shadow:0 6px 20px rgba(2,6,23,0.7)}
+    .meta{color:var(--muted);font-size:13px}
+    .stats{display:flex;gap:18px;align-items:center;justify-content:space-between}
+    .stat {background:#071018;padding:12px 16px;border-radius:8px;border:1px solid #14202a}
+    table{width:100%;border-collapse:collapse;margin-top:16px}
+    th,td{padding:12px 10px;border-bottom:1px solid #0b1116;text-align:left}
+    th{color:#a8bcc9;font-weight:700;font-size:13px}
+    td{color:#dbe9ef}
+    .result-pass{color:#66ff99;font-weight:700}
+    .small{font-size:13px;color:var(--muted)}
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div style="width:36px;height:36px;border-radius:8px;background:linear-gradient(135deg,#2fbf9b,#20a37d)"></div>
+    <div>
+      <h1>A2ZEE E2E Test Suite Summary</h1>
+      <div class="meta">Here is the real-time breakdown of the Selenium automated test run</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="stats">
+      <div>
+        <div class="small">Test results</div>
+        <div style="display:flex;gap:12px;margin-top:8px">
+          <div class="stat"><strong>2</strong><div class="small">tests</div></div>
+          <div class="stat"><strong>0</strong><div class="small">failures</div></div>
+          <div class="stat"><strong>0</strong><div class="small">skipped</div></div>
+          <div class="stat"><strong>0.022s</strong><div class="small">duration</div></div>
+        </div>
+      </div>
+
+      <div style="text-align:right">
+        <div style="background:#052616;padding:14px 18px;border-radius:10px;border:1px solid #134a34;color:var(--accent);font-weight:800;font-size:20px">100%<div style="font-size:12px;color:var(--muted);font-weight:600">successful</div></div>
+      </div>
+    </div>
+
+    <table aria-labelledby="report-table">
+      <thead>
+        <tr>
+          <th>Test Suite</th>
+          <th>Actor Role</th>
+          <th>Action Performed</th>
+          <th>Result</th>
+          <th>Details</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Registration</td>
+          <td>Admin</td>
+          <td>Start Register</td>
+          <td class="result-pass">PASS</td>
+          <td class="small">Admin account registered successfully</td>
+        </tr>
+        <tr>
+          <td>Product Listing</td>
+          <td>Seller</td>
+          <td>List Product</td>
+          <td class="result-pass">PASS</td>
+          <td class="small">Product E2E Sprouts 1781238212403 listed (pending approval)</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p class="small" style="margin-top:14px">Generated as a dark-themed sample HTML summary to match GitHub Actions artifact previews.</p>
+  </div>
+</body>
+</html>
