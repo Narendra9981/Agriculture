@@ -2,9 +2,7 @@ package com.example.farmers.ui
 
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -39,15 +37,22 @@ fun WelcomeScreen(
     
     val googleAccounts = listOf(
         "kanamalanarendra1162.sse@saveeth.com",
-        "arjun.singh@gmail.com"
+        "arjun.singh@gmail.com",
+        "narendra.farmers@gmail.com",
+        "contact@agribot.ai",
+        "support@farmersapp.in"
     )
 
     if (showGooglePicker) {
+        val accountScrollState = rememberScrollState()
         AlertDialog(
             onDismissRequest = { showGooglePicker = false },
             title = { Text("Choose an account", style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.ExtraBold)) },
             text = {
-                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                Column(
+                    modifier = Modifier.fillMaxWidth().verticalScroll(accountScrollState),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
                     googleAccounts.forEach { email ->
                         Surface(
                             onClick = { 
@@ -72,6 +77,32 @@ fun WelcomeScreen(
                                 Spacer(modifier = Modifier.width(12.dp))
                                 Text(email, style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold))
                             }
+                        }
+                    }
+
+                    // Add another account option
+                    Surface(
+                        onClick = { 
+                            showGooglePicker = false
+                            // Simulated: Open add account flow
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp),
+                        color = Color.White,
+                        border = BorderStroke(1.dp, Color.LightGray.copy(alpha = 0.3f))
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(12.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Box(
+                                modifier = Modifier.size(32.dp).background(Color.LightGray.copy(alpha = 0.2f), CircleShape),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(Icons.Default.PersonAdd, null, modifier = Modifier.size(18.dp), tint = Color.Gray)
+                            }
+                            Spacer(modifier = Modifier.width(12.dp))
+                            Text("Add another account", style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold, color = Color.Gray))
                         }
                     }
                 }
