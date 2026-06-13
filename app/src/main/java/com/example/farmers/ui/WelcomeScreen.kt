@@ -36,87 +36,139 @@ fun WelcomeScreen(
     var showGooglePicker by remember { mutableStateOf(false) }
     
     val googleAccounts = listOf(
-        "kanamalanarendra1162.sse@saveeth.com",
-        "arjun.singh@gmail.com",
-        "narendra.farmers@gmail.com",
-        "narendra.agribot@gmail.com",
-        "farmer.arjun@outlook.com",
-        "contact@agribot.ai",
-        "support@farmersapp.in",
-        "marketing@agribot.ai",
-        "info@agriculture.org"
+        Pair("Kanamala Narendra", "kanamalanarendra950@gmail.com"),
+        Pair("kanamala manideep", "manideepkanamala@gmail.com"),
+        Pair("Clg Saveetha", "saveethaclg0@gmail.com"),
+        Pair("Kanamala Narendra", "narendrakanamala7@gmail.com"),
+        Pair("KANAMALA NARENDRA", "kanamalanarendra1162.sse@saveetha.com"),
+        Pair("Kanamala Narendra", "narendrakanamala53@gmail.com"),
+        Pair("Saveetha clg Saveetha clg", "ssaveethaclg0@gmail.com"),
+        Pair("Kanamala Nani", "kanamalanani4@gmail.com")
     )
 
     if (showGooglePicker) {
         val accountScrollState = rememberScrollState()
         AlertDialog(
             onDismissRequest = { showGooglePicker = false },
-            title = { Text("Choose an account", style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.ExtraBold)) },
+            title = {
+                Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
+                    Text(
+                        "Choose an account", 
+                        style = MaterialTheme.typography.headlineSmall.copy(
+                            fontWeight = FontWeight.Normal,
+                            color = Color(0xFF202124),
+                            fontSize = 24.sp
+                        ),
+                        textAlign = TextAlign.Center
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text("to continue to ", style = MaterialTheme.typography.bodyLarge.copy(color = Color(0xFF3C4043)))
+                        Text("AgriBot", style = MaterialTheme.typography.bodyLarge.copy(color = Color(0xFF1A73E8), fontWeight = FontWeight.Medium))
+                    }
+                }
+            },
             text = {
                 Column(
-                    modifier = Modifier.fillMaxWidth().verticalScroll(accountScrollState),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .heightIn(max = 450.dp)
+                        .verticalScroll(accountScrollState)
                 ) {
-                    googleAccounts.forEach { email ->
+                    HorizontalDivider(color = Color(0xFFDADCE0), thickness = 0.5.dp)
+                    googleAccounts.forEach { (name, email) ->
                         Surface(
                             onClick = { 
                                 showGooglePicker = false
                                 onGoogleClick(email) 
                             },
                             modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(12.dp),
-                            color = Color(0xFFF5F5F5),
-                            border = BorderStroke(1.dp, Color.LightGray.copy(alpha = 0.5f))
+                            color = Color.Transparent
                         ) {
                             Row(
-                                modifier = Modifier.padding(12.dp),
+                                modifier = Modifier.padding(vertical = 14.dp, horizontal = 4.dp),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Box(
-                                    modifier = Modifier.size(32.dp).background(AgriGreen, CircleShape),
+                                    modifier = Modifier.size(36.dp).background(
+                                        when(name.take(1).uppercase()) {
+                                            "K" -> Color(0xFF1A73E8)
+                                            "S" -> Color(0xFF7B1FA2)
+                                            else -> Color(0xFF0F9D58)
+                                        }, 
+                                        CircleShape
+                                    ),
                                     contentAlignment = Alignment.Center
                                 ) {
-                                    Text(email.take(1).uppercase(), color = Color.White, fontWeight = FontWeight.Bold)
+                                    Text(name.take(1).uppercase(), color = Color.White, fontWeight = FontWeight.Medium, fontSize = 16.sp)
                                 }
-                                Spacer(modifier = Modifier.width(12.dp))
-                                Text(email, style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold))
+                                Spacer(modifier = Modifier.width(16.dp))
+                                Column {
+                                    Text(
+                                        name, 
+                                        style = MaterialTheme.typography.bodyLarge.copy(
+                                            fontWeight = FontWeight.Medium,
+                                            color = Color(0xFF3C4043),
+                                            fontSize = 14.sp
+                                        )
+                                    )
+                                    Text(
+                                        email, 
+                                        style = MaterialTheme.typography.bodyMedium.copy(
+                                            color = Color(0xFF70757A),
+                                            fontSize = 12.sp
+                                        )
+                                    )
+                                }
                             }
                         }
+                        HorizontalDivider(color = Color(0xFFDADCE0), thickness = 0.5.dp)
                     }
 
-                    // Add another account option
+                    // Use another account option
                     Surface(
-                        onClick = { 
-                            showGooglePicker = false
-                            // Simulated: Open add account flow
-                        },
+                        onClick = { showGooglePicker = false },
                         modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(12.dp),
-                        color = Color.White,
-                        border = BorderStroke(1.dp, Color.LightGray.copy(alpha = 0.3f))
+                        color = Color.Transparent
                     ) {
                         Row(
-                            modifier = Modifier.padding(12.dp),
+                            modifier = Modifier.padding(vertical = 14.dp, horizontal = 4.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Box(
-                                modifier = Modifier.size(32.dp).background(Color.LightGray.copy(alpha = 0.2f), CircleShape),
+                                modifier = Modifier.size(36.dp).border(1.dp, Color(0xFFDADCE0), CircleShape),
                                 contentAlignment = Alignment.Center
                             ) {
-                                Icon(Icons.Default.PersonAdd, null, modifier = Modifier.size(18.dp), tint = Color.Gray)
+                                Icon(Icons.Default.AccountCircle, null, modifier = Modifier.size(24.dp), tint = Color(0xFF5F6368))
                             }
-                            Spacer(modifier = Modifier.width(12.dp))
-                            Text("Add another account", style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold, color = Color.Gray))
+                            Spacer(modifier = Modifier.width(16.dp))
+                            Text(
+                                "Use another account", 
+                                style = MaterialTheme.typography.bodyLarge.copy(
+                                    fontWeight = FontWeight.Medium,
+                                    color = Color(0xFF3C4043),
+                                    fontSize = 14.sp
+                                )
+                            )
                         }
                     }
+                    HorizontalDivider(color = Color(0xFFDADCE0), thickness = 0.5.dp)
+                    
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text(
+                        "Before using this app, you can review AgriBot's privacy policy and terms of service.",
+                        style = MaterialTheme.typography.bodySmall.copy(color = Color(0xFF70757A), fontSize = 11.sp),
+                        lineHeight = 16.sp
+                    )
                 }
             },
-            confirmButton = {
+            confirmButton = {},
+            dismissButton = {
                 TextButton(onClick = { showGooglePicker = false }) {
-                    Text("Cancel", color = AgriGreen, fontWeight = FontWeight.Bold)
+                    Text("Cancel", color = Color(0xFF1A73E8), fontWeight = FontWeight.Medium)
                 }
             },
-            shape = RoundedCornerShape(28.dp),
+            shape = RoundedCornerShape(8.dp),
             containerColor = Color.White
         )
     }
@@ -275,20 +327,36 @@ fun WelcomeScreen(
                 // Google Social
                 Surface(
                     onClick = { showGooglePicker = true },
-                    modifier = Modifier.fillMaxWidth().height(56.dp),
-                    shape = RoundedCornerShape(18.dp),
-                    color = Color.White,
-                    border = BorderStroke(1.dp, Color.LightGray.copy(alpha = 0.4f)),
-                    shadowElevation = 2.dp
+                    modifier = Modifier.fillMaxWidth().height(52.dp),
+                    shape = RoundedCornerShape(8.dp),
+                    color = Color(0xFFF2F2F2),
+                    border = BorderStroke(1.dp, Color(0xFFDADCE0).copy(alpha = 0.5f))
                 ) {
                     Row(
                         modifier = Modifier.fillMaxSize(),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Center
                     ) {
-                        Icon(Icons.Default.AccountCircle, null, modifier = Modifier.size(24.dp), tint = Color.Gray)
+                        // Official-looking Google "G" icon simulation
+                        Box(
+                            modifier = Modifier.size(20.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.AccountCircle, // Placeholder for G
+                                contentDescription = null,
+                                modifier = Modifier.size(20.dp),
+                                tint = Color(0xFF4285F4) // Google Blue
+                            )
+                        }
                         Spacer(modifier = Modifier.width(12.dp))
-                        Text("Sign in with Google", fontWeight = FontWeight.Bold, color = Color.DarkGray)
+                        Text(
+                            "Continue with Google", 
+                            fontWeight = FontWeight.Medium, 
+                            color = Color(0xFF3C4043),
+                            fontSize = 15.sp,
+                            letterSpacing = 0.2.sp
+                        )
                     }
                 }
             }
