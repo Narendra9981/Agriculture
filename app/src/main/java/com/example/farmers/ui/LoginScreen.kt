@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -45,8 +46,15 @@ fun LoginScreen(
     onLoginSuccess: () -> Unit = {},
     onCreateAccount: () -> Unit = {},
     onForgotPassword: () -> Unit = {},
-    onBack: () -> Unit = {}
+    onBack: () -> Unit = {},
+    onGoogleClick: (String) -> Unit = {}
 ) {
+    var showGooglePicker by remember { mutableStateOf(false) }
+    val googleAccounts = listOf(
+        "kanamalanarendra1162.sse@saveeth.com",
+        "arjun.singh@gmail.com"
+    )
+
     var emailInput by remember { mutableStateOf("") }
     var passwordInput by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
@@ -56,6 +64,50 @@ fun LoginScreen(
     var loadingText by remember { mutableStateOf("Processing...") }
     
     val context = LocalContext.current
+
+    if (showGooglePicker) {
+        AlertDialog(
+            onDismissRequest = { showGooglePicker = false },
+            title = { Text("Choose an account", style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.ExtraBold)) },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    googleAccounts.forEach { email ->
+                        Surface(
+                            onClick = { 
+                                showGooglePicker = false
+                                onGoogleClick(email) 
+                            },
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(12.dp),
+                            color = Color(0xFFF5F5F5),
+                            border = BorderStroke(1.dp, Color.LightGray.copy(alpha = 0.5f))
+                        ) {
+                            Row(
+                                modifier = Modifier.padding(12.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Box(
+                                    modifier = Modifier.size(32.dp).background(AgriGreen, CircleShape),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(email.take(1).uppercase(), color = Color.White, fontWeight = FontWeight.Bold)
+                                }
+                                Spacer(modifier = Modifier.width(12.dp))
+                                Text(email, style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold))
+                            }
+                        }
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = { showGooglePicker = false }) {
+                    Text("Cancel", color = AgriGreen, fontWeight = FontWeight.Bold)
+                }
+            },
+            shape = RoundedCornerShape(28.dp),
+            containerColor = Color.White
+        )
+    }
     
     val gso = remember {
         GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -276,7 +328,7 @@ fun LoginScreen(
                         // Google Sign-In Button
                         OutlinedButton(
                             onClick = {
-                                googleSignInLauncher.launch(googleSignInClient.signInIntent)
+                                showGooglePicker = true
                             },
                             modifier = Modifier.fillMaxWidth().height(54.dp),
                             shape = RoundedCornerShape(16.dp),

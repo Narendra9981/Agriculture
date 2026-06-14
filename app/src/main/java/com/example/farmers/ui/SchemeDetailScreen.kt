@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.farmers.ui.theme.*
 import com.example.farmers.data.FirebaseManager
+import com.example.farmers.data.AuthManager
 import com.google.firebase.auth.FirebaseAuth
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -195,7 +196,7 @@ fun SchemeDetailScreen(
                 Button(
                     onClick = {
                         applicationRef = "ABS-${(100000..999999).random()}"
-                        val uid = FirebaseAuth.getInstance().currentUser?.uid ?: "guest_user"
+                        val uid = if (AuthManager.isUserLoggedIn()) AuthManager.getUid() else "guest_user"
                         val appData = mapOf(
                             "schemeName" to schemeName,
                             "appliedDate" to java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", java.util.Locale.getDefault()).format(java.util.Date()),

@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>A2ZEE E2E Test Suite Summary</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; background:#f6f7f9; color:#111; padding:28px }
+    .header { display:flex; align-items:center; gap:12px }
+    h1 { margin:0; font-size:28px }
+    .summary { margin-top:18px; background:#fff; border-radius:8px; padding:18px; box-shadow:0 1px 4px rgba(0,0,0,0.06)}
+    table { width:100%; border-collapse:collapse; margin-top:12px }
+    th, td { padding:10px 12px; border-bottom:1px solid #e6e9ef; text-align:left }
+    th { background:#fafbfc; font-weight:700 }
+    .result-pass { color:#0a8f08; font-weight:700 }
+    .meta { color:#6b7280; margin-top:8px }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='28' height='28'><rect width='28' height='28' rx='6' fill='%2347c2b0'/></svg>" alt="logo" />
+    <div>
+      <h1>A2ZEE E2E Test Suite Summary</h1>
+      <div class="meta">Real-time breakdown of the Selenium automated test run</div>
+    </div>
+  </div>
+
+  <div class="summary">
+    <div style="display:flex;gap:24px;align-items:center;justify-content:space-between">
+      <div>
+        <strong>2</strong> tests &nbsp;&nbsp; <strong>0</strong> failures &nbsp;&nbsp; <strong>0</strong> skipped
+      </div>
+      <div style="background:#e5f6ea;border-radius:8px;padding:10px 16px;color:#0a8f08;font-weight:700">100% successful</div>
+    </div>
+
+    <table aria-labelledby="report-table">
+      <thead>
+        <tr>
+          <th>Test Suite</th>
+          <th>Actor Role</th>
+          <th>Action Performed</th>
+          <th>Result</th>
+          <th>Details</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Registration</td>
+          <td>Admin</td>
+          <td>Start Register</td>
+          <td class="result-pass">PASS</td>
+          <td>Admin account registered successfully</td>
+        </tr>
+        <tr>
+          <td>Product Listing</td>
+          <td>Seller</td>
+          <td>List Product</td>
+          <td class="result-pass">PASS</td>
+          <td>Product E2E Sprouts 1781238212403 listed (pending approval)</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p style="margin-top:16px;color:#6b7280">Generated as a sample HTML summary for local test artifacts.</p>
+  </div>
+</body>
+</html>

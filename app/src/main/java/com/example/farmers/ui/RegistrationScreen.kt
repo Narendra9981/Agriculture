@@ -170,8 +170,8 @@ fun RegistrationScreen(
                                             regStep = "Saving profile..."
                                             regProgress = 0.7f
                                             
-                                            // Get UID from FirebaseAuth
-                                            val uid = FirebaseAuth.getInstance().currentUser?.uid ?: email.replace(".", "_")
+                                            // Get UID from AuthManager
+                                            val uid = AuthManager.getUid().ifEmpty { email.replace(".", "_") }
                                             val profile = mapOf(
                                                 "name" to name,
                                                 "mobile" to mobile,

@@ -6,11 +6,14 @@ import com.google.firebase.FirebaseApp
 import com.google.firebase.FirebaseOptions
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.DatabaseReference
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.SetOptions
 
 object FirebaseManager {
     private const val DATABASE_URL = "https://farmers-acc82-default-rtdb.firebaseio.com/"
     
     private var database: FirebaseDatabase? = null
+    private var firestore: FirebaseFirestore? = null
 
     /**
      * Initializes Firebase manually if google-services.json is missing.
@@ -28,7 +31,8 @@ object FirebaseManager {
                 Log.d("FirebaseManager", "Firebase manually initialized")
             }
             database = FirebaseDatabase.getInstance(DATABASE_URL)
-            Log.d("FirebaseManager", "Database instance acquired")
+            firestore = FirebaseFirestore.getInstance()
+            Log.d("FirebaseManager", "Database and Firestore instances acquired")
         } catch (e: Exception) {
             Log.e("FirebaseManager", "Critical error during initialization: ${e.message}")
         }
@@ -36,12 +40,20 @@ object FirebaseManager {
 
     fun saveUserProfile(userId: String, profileData: Map<String, Any>) {
         try {
-            if (database == null) {
-                Log.e("FirebaseManager", "Cannot save profile: Database not initialized")
-                return
+            // Save to Realtime Database (Legacy)
+            if (database != null) {
+                database?.getReference("users")?.child(userId)?.updateChildren(profileData)
+                    ?.addOnFailureListener { Log.e("FirebaseManager", "RTDB sync failure: ${it.message}") }
             }
-            database?.getReference("users")?.child(userId)?.updateChildren(profileData)
-                ?.addOnFailureListener { Log.e("FirebaseManager", "Sync failure: ${it.message}") }
+            
+            // Save to Firestore (New requirement)
+            if (firestore != null) {
+                firestore?.collection("users")?.document(userId)
+                    ?.set(profileData, SetOptions.merge())
+                    ?.addOnSuccessListener { Log.d("FirebaseManager", "Firestore profile saved for $userId") }
+                    ?.addOnFailureListener { Log.e("FirebaseManager", "Firestore sync failure: ${it.message}") }
+            }
+
             Log.d("FirebaseManager", "Profile push attempted for $userId")
         } catch (e: Exception) {
             Log.e("FirebaseManager", "Exception during save profile: ${e.message}")

@@ -54,7 +54,7 @@ class MainActivity : ComponentActivity() {
                             onPhoneLoginClick = { currentScreen = Screen.Login },
                             onEmailLoginClick = { currentScreen = Screen.Login },
                             onSignUpClick = { currentScreen = Screen.Registration },
-                            onGoogleClick = { email -> 
+                            onLoginSuccess = {
                                 currentScreen = Screen.HomeDashboard // Direct login to dashboard
                             }
                         )
@@ -75,7 +75,11 @@ class MainActivity : ComponentActivity() {
                         Screen.Login -> LoginScreen(
                             onLoginSuccess = { currentScreen = Screen.HomeDashboard },
                             onCreateAccount = { currentScreen = Screen.Registration },
-                            onForgotPassword = { /* Navigate to Recovery */ }
+                            onForgotPassword = { /* Navigate to Recovery */ },
+                            onGoogleClick = { email -> 
+                                AuthManager.loginMockUser(email)
+                                currentScreen = Screen.HomeDashboard // Route directly to dashboard
+                            }
                         )
                         Screen.Registration -> RegistrationScreen(
                             onRegisterSuccess = { currentScreen = Screen.HomeDashboard },

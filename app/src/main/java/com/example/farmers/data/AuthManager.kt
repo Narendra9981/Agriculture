@@ -10,6 +10,41 @@ import java.util.concurrent.TimeUnit
 object AuthManager {
     private val auth: FirebaseAuth by lazy { FirebaseAuth.getInstance() }
 
+    // --- MOCK USER SESSION STATE ---
+    private var mockUserEmail: String? = null
+    private var mockUserName: String? = null
+    private var mockUserUid: String? = null
+
+    fun loginMockUser(email: String) {
+        mockUserEmail = email
+        mockUserName = if (email == "kanamalanarendra1162.sse@saveeth.com") "Narendra" else "Arjun Singh"
+        mockUserUid = "google_mock_" + email.replace("[^a-zA-Z0-9]".toRegex(), "_")
+        
+        // Sync profile data to Firebase Realtime Database
+        val profile = mapOf(
+            "name" to mockUserName!!,
+            "email" to mockUserEmail!!,
+            "state" to "Ludhiana, Punjab",
+            "mobile" to if (email == "kanamalanarendra1162.sse@saveeth.com") "+91 98765 43210" else "+91 99887 76655",
+            "farmSize" to if (email == "kanamalanarendra1162.sse@saveeth.com") "7.2" else "5.5",
+            "soilType" to if (email == "kanamalanarendra1162.sse@saveeth.com") "Alluvial Soil" else "Clay Loam",
+            "crops" to if (email == "kanamalanarendra1162.sse@saveeth.com") "Rice, Sugarcane" else "Wheat, Rice"
+        )
+        FirebaseManager.saveUserProfile(mockUserUid!!, profile)
+    }
+
+    fun getDisplayName(): String {
+        return mockUserName ?: auth.currentUser?.displayName ?: "Farmer"
+    }
+
+    fun getEmail(): String {
+        return mockUserEmail ?: auth.currentUser?.email ?: ""
+    }
+
+    fun getUid(): String {
+        return mockUserUid ?: auth.currentUser?.uid ?: ""
+    }
+
     // --- EMAIL AUTHENTICATION ---
 
     fun signUpWithEmail(email: String, password: String, onResult: (Boolean, String?) -> Unit) {
@@ -101,9 +136,12 @@ object AuthManager {
 
     fun logout() {
         auth.signOut()
+        mockUserEmail = null
+        mockUserName = null
+        mockUserUid = null
     }
 
     fun isUserLoggedIn(): Boolean {
-        return auth.currentUser != null
+        return auth.currentUser != null || mockUserUid != null
     }
 }

@@ -31,6 +31,20 @@ object LanguageManager {
      * immediate language switching without restarting the activity.
      */
     fun getString(key: String): String {
+        if (key == "welcome") {
+            val name = AuthManager.getDisplayName()
+            val prefix = when (currentLanguage) {
+                "Hindi (हिन्दी)" -> "स्वागत है"
+                "Punjabi (ਪੰਜਾਬੀ)" -> "ਜੀ ਆਇਆਂ ਨੂੰ"
+                "Marathi (मराठी)" -> "स्वागत आहे"
+                "Gujarati (ગુજરાતી)" -> "સ્વાગત છે"
+                "Kannada (ಕನ್ನಡ)" -> "ಸ್ವಾಗತ"
+                "Telugu (తెలుగు)" -> "స్వాగతం"
+                "Tamil (தமிழ்)" -> "வரவேற்கிறோம்"
+                else -> "Welcome"
+            }
+            return "$prefix, $name"
+        }
         return translations[currentLanguage]?.get(key) ?: translations["English"]?.get(key) ?: key
     }
 

@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.farmers.ui.theme.*
 import com.example.farmers.data.FirebaseManager
+import com.example.farmers.data.AuthManager
 import com.google.firebase.auth.FirebaseAuth
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -49,18 +50,18 @@ fun UserProfileScreen(
     var userEmail by remember { mutableStateOf("") }
 
     LaunchedEffect(Unit) {
-        val currentUser = FirebaseAuth.getInstance().currentUser
-        if (currentUser != null) {
-            userEmail = currentUser.email ?: ""
-            FirebaseManager.getUserProfile(currentUser.uid) { profile ->
+        if (AuthManager.isUserLoggedIn()) {
+            val uid = AuthManager.getUid()
+            userEmail = AuthManager.getEmail()
+            FirebaseManager.getUserProfile(uid) { profile ->
                 if (profile != null) {
-                    userName = profile["name"] as? String ?: currentUser.displayName ?: "Farmer"
+                    userName = profile["name"] as? String ?: AuthManager.getDisplayName()
                     userLocation = profile["state"] as? String ?: "India"
                     userPhone = profile["mobile"] as? String ?: ""
                 } else {
-                    userName = currentUser.displayName ?: "Farmer"
+                    userName = AuthManager.getDisplayName()
                     userLocation = "India"
-                    userPhone = currentUser.phoneNumber ?: ""
+                    userPhone = ""
                 }
             }
         }
