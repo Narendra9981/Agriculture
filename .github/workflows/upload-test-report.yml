@@ -20,6 +20,9 @@ jobs:
           distribution: 'temurin'
           cache: gradle
 
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+
       - name: Run unit tests
         run: ./gradlew :app:testDebugUnitTest --no-daemon --console=plain
 
