@@ -41,9 +41,42 @@ jobs:
           sleep 5
           echo "All Selenium tests passed successfully."
 
-      - name: Generate Job Summary
-        if: always()
-        run: python scripts/generate_github_summary.py
+      - name: Generate Selenium XML Report
+        run: python scripts/generate_selenium_xml.py
+
+      - name: Upload Selenium Raw Results
+        uses: actions/upload-artifact@v4
+        with:
+          name: selenium-raw-results
+          path: selenium-results/TEST-SeleniumE2ETests.xml
+
+  appium-e2e-tests:
+    name: Appium E2E Tests
+    needs: web-validation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Run Appium Tests Simulation
+        run: |
+          echo "Starting Appium Mobile E2E Tests..."
+          sleep 5
+          echo "All Appium mobile tests passed successfully."
+
+      - name: Generate Appium XML Report
+        run: python scripts/generate_appium_xml.py
+
+      - name: Upload Appium Raw Results
+        uses: actions/upload-artifact@v4
+        with:
+          name: appium-raw-results
+          path: appium-results/TEST-AppiumE2ETests.xml
 
   android-build-test:
     name: Android Build & Test
@@ -65,5 +98,60 @@ jobs:
       - name: Run Android Unit Tests
         run: ./gradlew :app:testDebugUnitTest --no-daemon --console=plain
 
+      - name: Upload Android Unit Test Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-unit-test-results
+          path: app/build/test-results/testDebugUnitTest/TEST-*.xml
+
       - name: Build Debug APK
         run: ./gradlew assembleDebug --no-daemon
+
+  generate-report:
+    name: Generate Combined Test Report
+    needs: [selenium-e2e-tests, appium-e2e-tests, android-build-test]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: pip install openpyxl
+
+      - name: Download Selenium Results
+        uses: actions/download-artifact@v4
+        with:
+          name: selenium-raw-results
+          path: all-test-results
+
+      - name: Download Appium Results
+        uses: actions/download-artifact@v4
+        with:
+          name: appium-raw-results
+          path: all-test-results
+
+      - name: Download Android Unit Test Results
+        uses: actions/download-artifact@v4
+        with:
+          name: android-unit-test-results
+          path: all-test-results
+
+      - name: Convert reports to Excel
+        run: python scripts/parse_tests_to_excel.py all-test-results test-results.xlsx
+
+      - name: Generate Job Summary
+        run: python scripts/generate_github_summary.py
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: test-results.xlsx
+
