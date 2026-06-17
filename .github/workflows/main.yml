@@ -160,3 +160,21 @@ jobs:
             test-results.xlsx
             test-results.xml
 
+      - name: Upload Selenium Excel Results
+        uses: actions/upload-artifact@v4
+        with:
+          name: selenium-test-results
+          path: selenium-test-results.xlsx
+
+      - name: Upload Appium Excel Results
+        uses: actions/upload-artifact@v4
+        with:
+          name: appium-test-results
+          path: appium-test-results.xlsx
+
+      - name: Upload Android Excel Results
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-test-results
+          path: android-test-results.xlsx
+

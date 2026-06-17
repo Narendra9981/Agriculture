@@ -64,11 +64,7 @@ def parse_xml_reports(directory):
             
     return test_cases
 
-def write_to_excel(test_cases, output_file):
-    wb = openpyxl.Workbook()
-    ws = wb.active
-    ws.title = "Test Results"
-    
+def write_sheet_data(ws, test_cases):
     # Enable grid lines explicitly
     ws.views.sheetView[0].showGridLines = True
     
@@ -133,9 +129,72 @@ def write_to_excel(test_cases, output_file):
             if len(val) > max_len:
                 max_len = len(val)
         ws.column_dimensions[col_letter].width = max(max_len + 3, 10)
+
+def write_to_excel(test_cases, output_file):
+    # Categorize test cases by type
+    android_cases = []
+    selenium_cases = []
+    appium_cases = []
+    
+    for case in test_cases:
+        cls = case["Class Name"]
+        if cls.startswith("WebAuth") or cls.startswith("WebAdmin") or cls.startswith("WebCrop") or cls.startswith("WebForum") or cls.startswith("WebMarket") or "Selenium" in cls:
+            selenium_cases.append(case)
+        elif cls.startswith("MobileAuth") or cls.startswith("MobileCamera") or cls.startswith("MobileLocation") or cls.startswith("MobileOffline") or cls.startswith("MobileBot") or "Appium" in cls:
+            appium_cases.append(case)
+        else:
+            android_cases.append(case)
+            
+    # 1. Write tabbed combined Excel report
+    wb = openpyxl.Workbook()
+    default_sheet = wb.active
+    wb.remove(default_sheet)
+    
+    if android_cases:
+        ws_android = wb.create_sheet(title="Android Unit Tests")
+        write_sheet_data(ws_android, android_cases)
+    if selenium_cases:
+        ws_selenium = wb.create_sheet(title="Selenium Web E2E")
+        write_sheet_data(ws_selenium, selenium_cases)
+    if appium_cases:
+        ws_appium = wb.create_sheet(title="Appium Mobile E2E")
+        write_sheet_data(ws_appium, appium_cases)
+        
+    if not wb.sheetnames:
+        wb.create_sheet(title="No Results")
         
     wb.save(output_file)
-    print(f"Saved {len(test_cases)} test cases to {output_file}")
+    print(f"Saved combined tabbed test cases to {output_file}")
+    
+    # 2. Write separate Excel files
+    out_dir = os.path.dirname(output_file) or "."
+    
+    # Selenium separate file
+    wb_sel = openpyxl.Workbook()
+    ws_sel = wb_sel.active
+    ws_sel.title = "Selenium Web E2E"
+    write_sheet_data(ws_sel, selenium_cases)
+    sel_file = os.path.join(out_dir, "selenium-test-results.xlsx")
+    wb_sel.save(sel_file)
+    print(f"Saved {len(selenium_cases)} Selenium test cases to {sel_file}")
+    
+    # Appium separate file
+    wb_app = openpyxl.Workbook()
+    ws_app = wb_app.active
+    ws_app.title = "Appium Mobile E2E"
+    write_sheet_data(ws_app, appium_cases)
+    app_file = os.path.join(out_dir, "appium-test-results.xlsx")
+    wb_app.save(app_file)
+    print(f"Saved {len(appium_cases)} Appium test cases to {app_file}")
+    
+    # Android separate file
+    wb_and = openpyxl.Workbook()
+    ws_and = wb_and.active
+    ws_and.title = "Android Unit Tests"
+    write_sheet_data(ws_and, android_cases)
+    and_file = os.path.join(out_dir, "android-test-results.xlsx")
+    wb_and.save(and_file)
+    print(f"Saved {len(android_cases)} Android test cases to {and_file}")
 
 if __name__ == "__main__":
     import sys
