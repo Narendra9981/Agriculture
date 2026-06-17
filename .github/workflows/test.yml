@@ -1,134 +1,54 @@
-name: AgriBot – Run All Tests & Upload Excel Reports
+name: Tests
 
 on:
   push:
-    branches: [main, master]
+    branches: [ main, master, develop ]
   pull_request:
-    branches: [main, master]
-  workflow_dispatch:
+    branches: [ main, master, develop ]
 
+# Automated tests configuration - All test cases must pass
+# Using latest stable actions versions for reliability
 jobs:
-  # ─────────────────────────────────────────────────────────────────────────────
-  # JOB 1: Selenium Web E2E Tests
-  # ─────────────────────────────────────────────────────────────────────────────
-  selenium-tests:
-    name: 💻 Selenium Web E2E Tests
+  test:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
+    - uses: actions/checkout@v4
+    
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        cache: gradle
+    
+    - name: Make gradlew executable
+      run: chmod +x ./gradlew
+    
+    - name: Run unit tests
+      run: ./gradlew test --stacktrace
+    
+    - name: Set up Python
+      if: always()
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.x'
+        
+    - name: Install dependencies
+      if: always()
+      run: pip install openpyxl
+      
+    - name: Convert reports to Excel
+      if: always()
+      run: python scripts/parse_tests_to_excel.py app/build/test-results test-results.xlsx
+    
+    - name: Generate Job Summary
+      if: always()
+      run: python scripts/generate_github_summary.py
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-
-      - name: Install Dependencies
-        run: |
-          pip install openpyxl selenium webdriver-manager
-
-      - name: Generate Selenium Excel Report
-        run: |
-          python tests/generate_selenium_report.py
-
-      - name: Upload Selenium Excel Report
-        uses: actions/upload-artifact@v4
-        with:
-          name: Agriculture-Selenium-Web-Tests
-          path: reports/1_Selenium_E2E_Tests.xlsx
-          retention-days: 30
-
-  # ─────────────────────────────────────────────────────────────────────────────
-  # JOB 2: Appium Android Mobile Tests
-  # ─────────────────────────────────────────────────────────────────────────────
-  appium-tests:
-    name: 📱 Appium Android Mobile Tests
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-
-      - name: Install Dependencies
-        run: |
-          pip install openpyxl Appium-Python-Client
-
-      - name: Generate Appium Excel Report
-        run: |
-          python tests/generate_appium_report.py
-
-      - name: Upload Appium Excel Report
-        uses: actions/upload-artifact@v4
-        with:
-          name: Agriculture-Appium-Android-Tests
-          path: reports/2_Appium_Mobile_E2E_Tests.xlsx
-          retention-days: 30
-
-  # ─────────────────────────────────────────────────────────────────────────────
-  # JOB 3: Vulnerability / Security Tests
-  # ─────────────────────────────────────────────────────────────────────────────
-  vulnerability-tests:
-    name: 🔒 Vulnerability Security Tests
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-
-      - name: Install Dependencies
-        run: |
-          pip install openpyxl requests
-
-      - name: Generate Vulnerability Excel Report
-        run: |
-          python tests/generate_vulnerability_report.py
-
-      - name: Upload Vulnerability Excel Report
-        uses: actions/upload-artifact@v4
-        with:
-          name: Agriculture-Vulnerability-Tests
-          path: reports/3_Vulnerability_Tests.xlsx
-          retention-days: 30
-
-  # ─────────────────────────────────────────────────────────────────────────────
-  # JOB 4: Combined Report (all 150 test cases)
-  # ─────────────────────────────────────────────────────────────────────────────
-  combined-report:
-    name: 📊 All 150 Tests – Combined Excel Report
-    runs-on: ubuntu-latest
-    needs: [selenium-tests, appium-tests, vulnerability-tests]
-
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-
-      - name: Install Dependencies
-        run: |
-          pip install openpyxl
-
-      - name: Generate Combined Excel Report
-        run: |
-          python tests/generate_combined_report.py
-
-      - name: Upload Combined Excel Report
-        uses: actions/upload-artifact@v4
-        with:
-          name: Agriculture-All-Tests-Combined
-          path: reports/4_AgriBot_All_150_Combined.xlsx
-          retention-days: 30
+    - name: Upload test results
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: test-results
+        path: test-results.xlsx
