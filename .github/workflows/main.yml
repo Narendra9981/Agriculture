@@ -146,6 +146,9 @@ jobs:
       - name: Convert reports to Excel
         run: python scripts/parse_tests_to_excel.py all-test-results test-results.xlsx
 
+      - name: Convert reports to XML
+        run: python scripts/parse_tests_to_xml.py all-test-results test-results.xml
+
       - name: Generate Job Summary
         run: python scripts/generate_github_summary.py
 
@@ -153,5 +156,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: test-results
-          path: test-results.xlsx
+          path: |
+            test-results.xlsx
+            test-results.xml
 
