@@ -25,6 +25,7 @@ object AuthManager {
             "name" to mockUserName!!,
             "email" to mockUserEmail!!,
             "state" to "Ludhiana, Punjab",
+            "location" to "Ludhiana, Punjab",
             "mobile" to if (email == "kanamalanarendra1162.sse@saveeth.com") "+91 98765 43210" else "+91 99887 76655",
             "farmSize" to if (email == "kanamalanarendra1162.sse@saveeth.com") "7.2" else "5.5",
             "soilType" to if (email == "kanamalanarendra1162.sse@saveeth.com") "Alluvial Soil" else "Clay Loam",

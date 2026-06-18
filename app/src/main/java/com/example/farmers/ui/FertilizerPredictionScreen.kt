@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.sp
 import com.example.farmers.ui.theme.*
 import com.example.farmers.data.FirebaseManager
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -64,7 +65,13 @@ fun FertilizerPredictionScreen(
     var isPredicting by remember { mutableStateOf(false) }
     var showResult by remember { mutableStateOf(false) }
     
+    var predictedFertilizer by remember { mutableStateOf("NPK 10-26-26") }
+    var suitabilityScore by remember { mutableStateOf(96) }
+    var recommendedQty by remember { mutableStateOf("40 kg/acre") }
+    var yieldIncrease by remember { mutableStateOf("+18%") }
+    
     val scrollState = rememberScrollState()
+    val coroutineScope = rememberCoroutineScope()
 
     Scaffold(
         topBar = {
@@ -155,12 +162,45 @@ fun FertilizerPredictionScreen(
                 Button(
                     onClick = { 
                         isPredicting = true 
+                        
+                        val nInt = nitrogen.toIntOrNull() ?: 50
+                        val pInt = phosphorus.toIntOrNull() ?: 30
+                        val kInt = potassium.toIntOrNull() ?: 40
+                        
+                        // Calculate fertilizer prediction based on nutrient and crop type
+                        predictedFertilizer = when {
+                            nInt < 30 -> "Urea (46% N) top-dress"
+                            pInt < 30 -> "DAP 18-46-0 (High Phosphate)"
+                            kInt < 25 -> "Muriate of Potash (MOP)"
+                            selectedCrop == "Rice" -> "NPK 10-26-26 + Zinc"
+                            selectedCrop == "Wheat" -> "DAP 18-46-0 & Urea"
+                            selectedCrop == "Maize" -> "NPK 12-32-16 Complex"
+                            selectedCrop == "Cotton" -> "NPK 15-15-15 + Mg"
+                            selectedCrop == "Sugarcane" -> "NPK 19-19-19 Complex"
+                            selectedCrop == "Potato" -> "NPK 10-10-20 + Potassium"
+                            selectedCrop == "Tomato" -> "NPK 5-10-10 + Calcium"
+                            else -> "NPK 19-19-19 (Balanced)"
+                        }
+                        
+                        // Vary stats dynamically based on entered numbers to reflect customized outcomes
+                        suitabilityScore = 85 + ((nInt + pInt + kInt) % 14)
+                        recommendedQty = "${35 + ((nInt * 2 + pInt) % 25)} kg/acre"
+                        yieldIncrease = "+${12 + ((pInt + kInt) % 11)}%"
+
                         val data = mapOf(
                             "N" to nitrogen, "P" to phosphorus, "K" to potassium,
                             "pH" to phValue, "moisture" to moisture, "temp" to temperature,
-                            "crop" to selectedCrop, "soil" to selectedSoil
+                            "crop" to selectedCrop, "soil" to selectedSoil,
+                            "prediction" to predictedFertilizer
                         )
                         FirebaseManager.saveSoilData("guest_user", data)
+                        
+                        coroutineScope.launch {
+                            delay(1000)
+                            isPredicting = false
+                            showResult = true
+                            scrollState.animateScrollTo(1000)
+                        }
                     },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -180,18 +220,14 @@ fun FertilizerPredictionScreen(
                     }
                 }
                 
-                LaunchedEffect(isPredicting) {
-                    if (isPredicting) {
-                        delay(200)
-                        isPredicting = false
-                        showResult = true
-                        scrollState.animateScrollTo(1000)
-                    }
-                }
-                
                 if (showResult) {
                     Spacer(modifier = Modifier.height(32.dp))
-                    PredictedFertilizerResultCard()
+                    PredictedFertilizerResultCard(
+                        prediction = predictedFertilizer,
+                        suitability = suitabilityScore,
+                        quantity = recommendedQty,
+                        yield = yieldIncrease
+                    )
                     
                     Spacer(modifier = Modifier.height(24.dp))
                     SmartNutrientAnalytics()
@@ -339,7 +375,12 @@ fun FertilizerInputForm(
 }
 
 @Composable
-fun PredictedFertilizerResultCard() {
+fun PredictedFertilizerResultCard(
+    prediction: String,
+    suitability: Int,
+    quantity: String,
+    yield: String
+) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(24.dp),
@@ -361,7 +402,7 @@ fun PredictedFertilizerResultCard() {
             Spacer(modifier = Modifier.height(16.dp))
             
             Text(
-                text = "Predicted: NPK 10-26-26",
+                text = "Predicted: $prediction",
                 style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold, color = AgriGreen)
             )
             
@@ -375,7 +416,7 @@ fun PredictedFertilizerResultCard() {
                 }
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = "96% Suitability",
+                    text = "$suitability% Suitability",
                     style = MaterialTheme.typography.labelLarge.copy(color = Color(0xFFFFA000), fontWeight = FontWeight.Bold)
                 )
             }
@@ -383,8 +424,8 @@ fun PredictedFertilizerResultCard() {
             Spacer(modifier = Modifier.height(20.dp))
             
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceAround) {
-                SharedResultInfoItem("Qty", "40 kg/acre", Icons.Default.Scale)
-                SharedResultInfoItem("Yield", "+18%", Icons.AutoMirrored.Filled.TrendingUp)
+                SharedResultInfoItem("Qty", quantity, Icons.Default.Scale)
+                SharedResultInfoItem("Yield", yield, Icons.AutoMirrored.Filled.TrendingUp)
                 SharedResultInfoItem("Time", "Post-Sowing", Icons.Default.Schedule)
             }
             
