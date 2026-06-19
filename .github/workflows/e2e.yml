@@ -7,6 +7,12 @@ on:
     branches: [ main, master ]
   workflow_dispatch:
 
+# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
+# However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
 jobs:
   selenium-website-tests:
     name: "🌐 Selenium — Website Tests (300)"
@@ -20,14 +26,17 @@ jobs:
         with:
           python-version: "3.11"
 
+      - name: Install dependencies
+        run: pip install openpyxl
+
       - name: Generate E2E XML reports
         run: python scripts/generate_all_xmls.py
 
-      - name: Upload Selenium XML Results
+      - name: Upload Selenium Results
         uses: actions/upload-artifact@v4
         with:
           name: selenium-raw-results
-          path: selenium-results/TEST-SeleniumE2ETests.xml
+          path: selenium-results/
 
   appium-android-tests:
     name: "📱 Appium — Android Tests (300)"
@@ -41,14 +50,17 @@ jobs:
         with:
           python-version: "3.11"
 
+      - name: Install dependencies
+        run: pip install openpyxl
+
       - name: Generate E2E XML reports
         run: python scripts/generate_all_xmls.py
 
-      - name: Upload Appium XML Results
+      - name: Upload Appium Results
         uses: actions/upload-artifact@v4
         with:
           name: appium-raw-results
-          path: appium-results/TEST-AppiumE2ETests.xml
+          path: appium-results/
 
   unit-tests-api:
     name: "🔬 Unit Tests — API (300)"
@@ -62,14 +74,17 @@ jobs:
         with:
           python-version: "3.11"
 
+      - name: Install dependencies
+        run: pip install openpyxl
+
       - name: Generate E2E XML reports
         run: python scripts/generate_all_xmls.py
 
-      - name: Upload API Unit XML Results
+      - name: Upload API Unit Results
         uses: actions/upload-artifact@v4
         with:
           name: api-raw-results
-          path: api-results/TEST-ApiUnitTests.xml
+          path: api-results/
 
   validation-tests:
     name: "✅ Validation Tests (300)"
@@ -83,14 +98,17 @@ jobs:
         with:
           python-version: "3.11"
 
+      - name: Install dependencies
+        run: pip install openpyxl
+
       - name: Generate E2E XML reports
         run: python scripts/generate_all_xmls.py
 
-      - name: Upload Validation XML Results
+      - name: Upload Validation Results
         uses: actions/upload-artifact@v4
         with:
           name: validation-raw-results
-          path: validation-results/TEST-ValidationTests.xml
+          path: validation-results/
 
   deployment-status-tests:
     name: "🚀 Deployment Status (300)"
@@ -104,14 +122,17 @@ jobs:
         with:
           python-version: "3.11"
 
+      - name: Install dependencies
+        run: pip install openpyxl
+
       - name: Generate E2E XML reports
         run: python scripts/generate_all_xmls.py
 
-      - name: Upload Deployment XML Results
+      - name: Upload Deployment Results
         uses: actions/upload-artifact@v4
         with:
           name: deployment-raw-results
-          path: deployment-results/TEST-DeploymentStatusTests.xml
+          path: deployment-results/
 
   load-testing-performance:
     name: "📈 Load Testing — Performance (300)"
@@ -125,14 +146,17 @@ jobs:
         with:
           python-version: "3.11"
 
+      - name: Install dependencies
+        run: pip install openpyxl
+
       - name: Generate E2E XML reports
         run: python scripts/generate_all_xmls.py
 
-      - name: Upload Performance XML Results
+      - name: Upload Performance Results
         uses: actions/upload-artifact@v4
         with:
           name: performance-raw-results
-          path: performance-results/TEST-LoadTestingPerformanceTests.xml
+          path: performance-results/
 
   compile-master-report:
     name: "📊 Compile Master Report & Deploy"
@@ -145,7 +169,9 @@ jobs:
       - load-testing-performance
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+      contents: read
+      pages: write
+      id-token: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -154,6 +180,9 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install openpyxl
 
       - name: Download Selenium Results
         uses: actions/download-artifact@v4
@@ -194,11 +223,17 @@ jobs:
       - name: Compile HTML dashboard
         run: python scripts/compile_master_report.py
 
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v4
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./public
+          path: './public'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
 
       - name: Add summary link
         run: |
