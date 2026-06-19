@@ -251,20 +251,20 @@ def main():
     print(f"Parsed {len(cases)} total E2E test cases.")
     
     cases_json = json.dumps(cases, indent=2)
-    os.makedirs("public", exist_ok=True)
+    os.makedirs("public/reports", exist_ok=True)
     
     # 1. Compile E2E Master Excel Sheet
-    master_excel_path = "public/AgriBot_All_1800_Combined.xlsx"
+    master_excel_path = "public/reports/AgriBot_All_1800_Combined.xlsx"
     generate_master_excel(cases, master_excel_path)
     
-    # 2. Copy separate sheets into public/ for web downloads
+    # 2. Copy separate sheets into public/reports/ for web downloads
     reports_map = {
-        "selenium-results/1_Selenium_Website_Tests.xlsx": "public/1_Selenium_Website_Tests.xlsx",
-        "appium-results/2_Appium_Android_Tests.xlsx": "public/2_Appium_Android_Tests.xlsx",
-        "api-results/3_Unit_Tests_API.xlsx": "public/3_Unit_Tests_API.xlsx",
-        "validation-results/4_Validation_Tests.xlsx": "public/4_Validation_Tests.xlsx",
-        "deployment-results/5_Deployment_Status_Tests.xlsx": "public/5_Deployment_Status_Tests.xlsx",
-        "performance-results/6_Load_Testing_Performance_Tests.xlsx": "public/6_Load_Testing_Performance_Tests.xlsx",
+        "selenium-results/1_Selenium_Website_Tests.xlsx": "public/reports/1_Selenium_Website_Tests.xlsx",
+        "appium-results/2_Appium_Android_Tests.xlsx": "public/reports/2_Appium_Android_Tests.xlsx",
+        "api-results/3_Unit_Tests_API.xlsx": "public/reports/3_Unit_Tests_API.xlsx",
+        "validation-results/4_Validation_Tests.xlsx": "public/reports/4_Validation_Tests.xlsx",
+        "deployment-results/5_Deployment_Status_Tests.xlsx": "public/reports/5_Deployment_Status_Tests.xlsx",
+        "performance-results/6_Load_Testing_Performance_Tests.xlsx": "public/reports/6_Load_Testing_Performance_Tests.xlsx",
     }
     for src, dst in reports_map.items():
         if os.path.exists(src):
@@ -664,10 +664,36 @@ def main():
 </html>
 """
     
-    output_path = "public/index.html"
+    output_path = "public/reports/index.html"
     with open(output_path, "w", encoding="utf-8") as f:
         f.write(html_content)
     print(f"Master HTML dashboard compiled at {output_path} with download links.")
+
+    # 4. Copy website assets to public root
+    import shutil
+    for fname in ["index.html", "style.css", "app.js"]:
+        src = os.path.join("website", fname)
+        dst = os.path.join("public", fname)
+        if os.path.exists(src):
+            shutil.copy(src, dst)
+            print(f"Copied website asset {src} to {dst}")
+            
+    # Add redirection from website reports button to test dashboard
+    web_index_path = "public/index.html"
+    if os.path.exists(web_index_path):
+        with open(web_index_path, "r", encoding="utf-8") as f:
+            content = f.read()
+        content = content.replace("\r\n", "\n")
+        target_btn = '<div class="tool-card">\n                    <div class="icon">📜</div>\n                    <span>Reports</span>\n                </div>'
+        replacement_btn = '<div class="tool-card" onclick="window.location.href=\'reports/index.html\'">\n                    <div class="icon">📜</div>\n                    <span>Reports</span>\n                </div>'
+        if target_btn in content:
+            content = content.replace(target_btn, replacement_btn)
+        else:
+            # Fallback if whitespace differs
+            content = content.replace('<div class="tool-card">', '<div class="tool-card" onclick="window.location.href=\'reports/index.html\'">', 1)
+        with open(web_index_path, "w", encoding="utf-8") as f:
+            f.write(content)
+        print("Updated website index.html with Reports button redirection link.")
 
 if __name__ == "__main__":
     main()
