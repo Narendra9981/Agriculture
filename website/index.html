@@ -3,122 +3,1150 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AgriBot Web - Smart AI Farming Assistant</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <title>AgriBot Portal - Smart AI Farming Website</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
 </head>
-<body>
+<body class="theme-green">
 
-    <div class="phone-mockup">
-        <!-- Status Bar -->
-        <div class="status-bar">
-            <span>9:41</span>
-            <span>📶 🔋</span>
+    <!-- Desktop Grid Wrapper -->
+    <div class="portal-container">
+        
+        <!-- Left Sidebar Navigation -->
+        <aside class="portal-sidebar" id="app-sidebar">
+            <div class="sidebar-logo">
+                <span class="logo-emoji">🌿</span>
+                <div class="logo-meta">
+                    <h2>AgriBot</h2>
+                    <span>AI Farming Portal</span>
+                </div>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <div class="nav-section-title">Core Features</div>
+                <a href="#" class="sidebar-item active" id="tab-home" onclick="navigateTo('screen-dashboard')">
+                    <span class="item-icon">🏠</span> <span data-t="home">Home</span>
+                </a>
+                <a href="#" class="sidebar-item" id="tab-chat" onclick="navigateTo('screen-chat')">
+                    <span class="item-icon">💬</span> <span data-t="bot">AI Chatbot</span>
+                </a>
+                <a href="#" class="sidebar-item" id="tab-scan" onclick="navigateTo('screen-scan')">
+                    <span class="item-icon">🔍</span> <span data-t="scan">Leaf Scanner</span>
+                </a>
+                <a href="#" class="sidebar-item" id="tab-weather" onclick="navigateTo('screen-weather')">
+                    <span class="item-icon">☀️</span> <span data-t="weather">Weather Forecast</span>
+                </a>
+                
+                <div class="nav-section-title">Calculators & Schemes</div>
+                <a href="#" class="sidebar-item" id="tab-fertilizer" onclick="navigateTo('screen-fertilizer')">
+                    <span class="item-icon">🧪</span> <span data-t="fert_guide">Fertilizer Guide</span>
+                </a>
+                <a href="#" class="sidebar-item" id="tab-fertilizer-pred" onclick="navigateTo('screen-fertilizer-pred')">
+                    <span class="item-icon">📈</span> <span data-t="fert_pred">Fertilizer Prediction</span>
+                </a>
+                <a href="#" class="sidebar-item" id="tab-schemes" onclick="navigateTo('screen-schemes')">
+                    <span class="item-icon">🏛️</span> <span data-t="schemes">Welfare Schemes</span>
+                </a>
+
+                <div class="nav-section-title">User Account</div>
+                <a href="#" class="sidebar-item" id="tab-profile" onclick="navigateTo('screen-profile')">
+                    <span class="item-icon">👤</span> <span data-t="profile">My Profile</span>
+                </a>
+                <a href="#" class="sidebar-item" id="tab-settings" onclick="navigateTo('screen-settings')">
+                    <span class="item-icon">⚙️</span> <span data-t="settings">Settings</span>
+                </a>
+                <a href="reports/index.html" target="_blank" class="sidebar-item" id="tab-reports">
+                    <span class="item-icon">📊</span> <span>Test Reports</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-user-footer">
+                <span class="avatar-sm">👨‍🌾</span>
+                <div class="user-meta-summary">
+                    <h4 id="footer-username">Arjun Singh</h4>
+                    <p>Ludhiana, Punjab</p>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Panel -->
+        <div class="portal-main">
+            
+            <!-- Top Utility Bar -->
+            <header class="portal-header">
+                <!-- Mobile menu toggle -->
+                <button class="mobile-toggle" onclick="toggleMobileSidebar()">☰</button>
+                
+                <div class="header-welcome-message">
+                    <h2 id="user-greeting">Welcome, Arjun Singh • Ludhiana</h2>
+                    <p class="header-loc-p">Active Database Sync Session</p>
+                </div>
+
+                <div class="header-utilities">
+                    <!-- App Language Dropdown -->
+                    <div class="header-lang-selector">
+                        <select id="header-lang-select" onchange="changeLanguage(this.value)">
+                            <option value="English">English</option>
+                            <option value="Hindi (हिन्दी)">Hindi (हिन्दी)</option>
+                            <option value="Punjabi (ਪੰਜਾਬੀ)">Punjabi (ਪੰਜਾਬੀ)</option>
+                            <option value="Marathi (मराठी)">Marathi (मराठी)</option>
+                            <option value="Gujarati (ગુજરાતી)">Gujarati (ગુજરાતી)</option>
+                            <option value="Kannada (ಕನ್ನಡ)">Kannada (ಕನ್ನಡ)</option>
+                            <option value="Telugu (తెలుగు)">Telugu (తెలుగు)</option>
+                            <option value="Tamil (தமிழ்)">Tamil (தமிழ்)</option>
+                        </select>
+                    </div>
+
+                    <!-- Theme Toggle Buttons -->
+                    <div class="header-theme-picker">
+                        <button class="theme-btn theme-green active" onclick="changeTheme('green')" title="Green Theme"></button>
+                        <button class="theme-btn theme-dark" onclick="changeTheme('dark')" title="Dark Theme"></button>
+                        <button class="theme-btn theme-earth" onclick="changeTheme('earth')" title="Earth Theme"></button>
+                    </div>
+
+                    <!-- Notification Button -->
+                    <button class="icon-btn-utility" title="Notifications">🔔</button>
+                    <button class="icon-btn-utility color-red" onclick="logoutUser()" title="Logout">🚪</button>
+                </div>
+            </header>
+
+            <!-- Active View viewport -->
+            <div class="portal-viewport">
+                
+                <!-- 1. SPLASH SCREEN (Used for initial load) -->
+                <section id="screen-splash" class="app-screen active">
+                    <div class="splash-content">
+                        <div class="logo-box">
+                            <span class="logo-emoji">🌿</span>
+                        </div>
+                        <h1 class="logo-text">AgriBot</h1>
+                        <p class="logo-tagline">AI Powered Smart Farming Portal</p>
+                        <div class="splash-loader"></div>
+                    </div>
+                </section>
+
+                <!-- 2. WELCOME SCREEN -->
+                <section id="screen-welcome" class="app-screen">
+                    <div class="welcome-container-fullscreen">
+                        <div class="welcome-left">
+                            <span class="giant-emoji">🌿</span>
+                            <h1>AgriBot Smart Farming Portal</h1>
+                            <p>Access precision crop analytics, soil testing summaries, leaf scanners, and welfare grants from any device.</p>
+                        </div>
+                        <div class="welcome-right">
+                            <div class="auth-card">
+                                <h2>Access Portal</h2>
+                                <p class="auth-desc">Enter your credentials or create a new agricultural account.</p>
+                                <div class="auth-buttons" style="display: flex; flex-direction: column; gap: 12px; width: 100%;">
+                                    <button class="btn btn-primary btn-ripple btn-full" onclick="navigateTo('screen-login')">Sign In with Credentials</button>
+                                    <button class="btn btn-outline btn-ripple btn-full" onclick="openGoogleChooser()">🔑 Sign In with Google</button>
+                                    <button class="btn btn-outline btn-ripple btn-full" onclick="navigateTo('screen-register')">Register New Farm</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 3. ONBOARDING 1 -->
+                <section id="screen-onboarding-1" class="app-screen">
+                    <div class="onboarding-split">
+                        <div class="onboarding-ill bg-green">🌾</div>
+                        <div class="onboarding-text">
+                            <h2>AI Crop Recommendation</h2>
+                            <p>Input your soil Nitrogen, Phosphorus, Potassium, temperature, and local rainfall levels to instantly receive a list of the most suitable, high-yield crops for your farm.</p>
+                            <div class="onboarding-footer">
+                                <span class="skip-link" onclick="navigateTo('screen-login')">Skip Onboarding</span>
+                                <div class="bullets"><span class="bullet active"></span><span class="bullet"></span><span class="bullet"></span></div>
+                                <button class="btn btn-primary btn-ripple" onclick="navigateTo('screen-onboarding-2')">Next Screen ➔</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 4. ONBOARDING 2 -->
+                <section id="screen-onboarding-2" class="app-screen">
+                    <div class="onboarding-split">
+                        <div class="onboarding-ill bg-orange">🔍</div>
+                        <div class="onboarding-text">
+                            <h2>Deep Learning Leaf Scanner</h2>
+                            <p>Upload a clear photo of any affected plant leaf. AgriBot analyzes the symptoms and provides an immediate crop disease diagnosis, along with organic and chemical remedies.</p>
+                            <div class="onboarding-footer">
+                                <span class="skip-link" onclick="navigateTo('screen-login')">Skip Onboarding</span>
+                                <div class="bullets"><span class="bullet"></span><span class="bullet active"></span><span class="bullet"></span></div>
+                                <button class="btn btn-primary btn-ripple" onclick="navigateTo('screen-onboarding-3')">Next Screen ➔</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 5. ONBOARDING 3 -->
+                <section id="screen-onboarding-3" class="app-screen">
+                    <div class="onboarding-split">
+                        <div class="onboarding-ill bg-blue">🧪</div>
+                        <div class="onboarding-text">
+                            <h2>Optimal Nutrient Guidance</h2>
+                            <p>Prevent soil degradation and maximize output. Our fertilizer calculator identifies nutrient deficits and calculates precise urea, DAP, or potash dosages required for your target yield.</p>
+                            <div class="onboarding-footer">
+                                <span class="back-link" onclick="navigateTo('screen-onboarding-2')">Back</span>
+                                <div class="bullets"><span class="bullet"></span><span class="bullet"></span><span class="bullet active"></span></div>
+                                <button class="btn btn-primary btn-ripple" onclick="navigateTo('screen-login')">Get Started Now</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 6. LOGIN SCREEN -->
+                <section id="screen-login" class="app-screen">
+                    <div class="auth-wrapper-fullscreen">
+                        <div class="auth-box-card">
+                            <h2>Sign In to Portal</h2>
+                            <p>Input email/phone and password to log in and sync with Firebase.</p>
+                            <form id="login-form" class="auth-form-body" onsubmit="handleLogin(event)">
+                                <div class="input-group">
+                                    <label>Email Address or Phone</label>
+                                    <input type="text" id="login-username" placeholder="farmers@agribot.com or +91..." required>
+                                </div>
+                                <div class="input-group">
+                                    <label>Password</label>
+                                    <input type="password" id="login-password" placeholder="••••••••" required>
+                                </div>
+                                <button type="submit" class="btn btn-primary btn-full btn-ripple">Login</button>
+                            </form>
+                            <div class="auth-divider"><span>OR</span></div>
+                            <button class="btn btn-outline btn-full btn-ripple" onclick="openGoogleChooser()">🔑 Sign In with Google</button>
+                            <div class="auth-toggle">
+                                Don't have an account? <span onclick="navigateTo('screen-register')">Register Now</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 7. REGISTRATION SCREEN -->
+                <section id="screen-register" class="app-screen">
+                    <div class="auth-wrapper-fullscreen">
+                        <div class="auth-box-card">
+                            <h2>Register New Farm Account</h2>
+                            <p>Register online to manage soil analytics and crop history.</p>
+                            <form id="register-form" class="auth-form-body" onsubmit="handleRegistration(event)">
+                                <div class="input-group">
+                                    <label>Farmer Full Name</label>
+                                    <input type="text" id="reg-name" placeholder="Arjun Singh" required>
+                                </div>
+                                <div class="input-group">
+                                    <label>Email Address</label>
+                                    <input type="email" id="reg-email" placeholder="arjun@agribot.com" required>
+                                </div>
+                                <div class="input-group">
+                                    <label>Phone Number</label>
+                                    <input type="tel" id="reg-phone" placeholder="+919876543210" required>
+                                </div>
+                                <div class="input-group">
+                                    <label>Password</label>
+                                    <input type="password" id="reg-password" placeholder="••••••••" required>
+                                </div>
+                                <button type="submit" class="btn btn-primary btn-full btn-ripple">Register & Verify</button>
+                            </form>
+                            <div class="auth-toggle">
+                                Already have an account? <span onclick="navigateTo('screen-login')">Login</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 8. OTP VERIFICATION SCREEN -->
+                <section id="screen-otp" class="app-screen">
+                    <div class="auth-wrapper-fullscreen">
+                        <div class="auth-box-card text-center">
+                            <h2>Confirm Registration</h2>
+                            <p>We've sent a 4-digit OTP code to verify your phone number.</p>
+                            <span class="otp-icon-lg">💬</span>
+                            <div class="otp-inputs">
+                                <input type="text" maxlength="1" class="otp-box" onkeyup="moveOtpFocus(this, 'otp2')">
+                                <input type="text" id="otp2" maxlength="1" class="otp-box" onkeyup="moveOtpFocus(this, 'otp3')">
+                                <input type="text" id="otp3" maxlength="1" class="otp-box" onkeyup="moveOtpFocus(this, 'otp4')">
+                                <input type="text" id="otp4" maxlength="1" class="otp-box" onkeyup="verifyOtpMock()">
+                            </div>
+                            <button class="btn btn-primary btn-full btn-ripple" onclick="verifyOtpMock()">Verify OTP</button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 9. HOME DASHBOARD SCREEN -->
+                <section id="screen-dashboard" class="app-screen">
+                    <div class="dashboard-full-layout">
+                        <!-- Top welcome weather grid -->
+                        <div class="dashboard-grid-row">
+                            
+                            <!-- Weather banner -->
+                            <div class="weather-wide-card btn-ripple" onclick="navigateTo('screen-weather')">
+                                <div class="weather-meta-info">
+                                    <span class="badge-active">REALTIME FORECAST</span>
+                                    <h2>32°C</h2>
+                                    <h3>Ludhiana, Punjab</h3>
+                                    <p>Sunny Conditions • 45% Humidity • Wind 12 km/h</p>
+                                </div>
+                                <div class="weather-large-sun">☀️</div>
+                            </div>
+
+                            <!-- Crop summary card -->
+                            <div class="welcome-highlight-card">
+                                <h3>Quick AI Assistant</h3>
+                                <p>Ask AgriBot any questions about soil nutrition balance, pest control, or crop yields.</p>
+                                <div class="assistant-links">
+                                    <button class="btn btn-primary btn-ripple btn-sm" onclick="navigateTo('screen-chat')">Open Chatbot 💬</button>
+                                    <button class="btn btn-outline btn-ripple btn-sm" onclick="navigateTo('screen-scan')">Scan Leaf 📷</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Quick Action Tool Cards -->
+                        <div class="portal-section-header">
+                            <h3 data-t="insights">Quick AI Tools</h3>
+                            <p>Access deep learning calculators and diagnostic utilities</p>
+                        </div>
+
+                        <div class="dashboard-tools-grid">
+                            <div class="tool-deck-card btn-ripple" onclick="navigateTo('screen-crop-rec')">
+                                <span class="deck-icon color-green">🌾</span>
+                                <h4 data-t="crop_rec">Crop Recommendation</h4>
+                                <p>Find the best matching crop species for your soil chemical composition.</p>
+                            </div>
+                            <div class="tool-deck-card btn-ripple" onclick="navigateTo('screen-scan')">
+                                <span class="deck-icon color-orange">🔍</span>
+                                <h4 data-t="disease_det">Disease Detection</h4>
+                                <p>Upload crop leaf photos to instantly diagnose bacterial or fungal infections.</p>
+                            </div>
+                            <div class="tool-deck-card btn-ripple" onclick="navigateTo('screen-weather')">
+                                <span class="deck-icon color-blue">☀️</span>
+                                <h4 data-t="weather">Weather Forecast</h4>
+                                <p>Check the 7-day outlook and receive custom agricultural weather advisories.</p>
+                            </div>
+                            <div class="tool-deck-card btn-ripple" onclick="navigateTo('screen-fertilizer')">
+                                <span class="deck-icon color-brown">🧪</span>
+                                <h4 data-t="fert_guide">Fertilizer Guide</h4>
+                                <p>Compute exact chemical dosage guidelines based on soil values.</p>
+                            </div>
+                            <div class="tool-deck-card btn-ripple" onclick="navigateTo('screen-fertilizer-pred')">
+                                <span class="deck-icon color-purple">📈</span>
+                                <h4 data-t="fert_pred">Fertilizer Prediction</h4>
+                                <p>AI model to predict soil fertility scores and fertilizer formulas.</p>
+                            </div>
+                            <div class="tool-deck-card btn-ripple" onclick="navigateTo('screen-schemes')">
+                                <span class="deck-icon color-pink">🏛️</span>
+                                <h4 data-t="schemes">Govt Schemes</h4>
+                                <p>Browse and apply for government subsidies, agricultural loans, and crop insurances.</p>
+                            </div>
+                            <div class="tool-deck-card btn-ripple" onclick="window.open('reports/index.html', '_blank')">
+                                <span class="deck-icon color-purple">📊</span>
+                                <h4>E2E Test Reports</h4>
+                                <p>View E2E test dashboard and download all 1,800 test case Excel workbooks.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 10. AI CHATBOT SCREEN -->
+                <section id="screen-chat" class="app-screen">
+                    <div class="chatbot-workspace">
+                        
+                        <!-- Chat history and sidebar inside page -->
+                        <div class="chat-workspace-left">
+                            <h3 class="side-title">AgriBot Assistant</h3>
+                            <p class="side-desc">Our virtual assistant provides direct guides on fertilizer usage, schemes, and irrigation staging.</p>
+                            <div class="online-box">
+                                <span class="pulse"></span> Active AI Session
+                            </div>
+                            <button class="btn btn-outline btn-full btn-sm" onclick="navigateTo('screen-dashboard')">Exit Chat</button>
+                        </div>
+
+                        <!-- Core chat thread panel -->
+                        <div class="chat-workspace-main">
+                            <div class="chat-thread-container" id="chat-messages-container">
+                                <!-- Dynamic Chat Bubbles -->
+                            </div>
+
+                            <!-- Suggestion Chips -->
+                            <div class="suggestion-chips-container" id="chat-suggestion-chips">
+                                <!-- Dynamic Chips -->
+                            </div>
+
+                            <!-- Input console -->
+                            <div class="chat-input-panel">
+                                <button class="panel-icon-btn" onclick="navigateTo('screen-scan')" title="Upload leaf photo">📷</button>
+                                <input type="text" id="chat-input-field" placeholder="Ask your farming question..." onkeydown="handleChatSubmit(event)">
+                                <button class="panel-icon-btn" onclick="toggleVoiceSheet(true)" title="Speak question">🎤</button>
+                                <button class="btn-send-portal" onclick="sendChatMessage()">➔</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 11. CROP RECOMMENDATION SCREEN -->
+                <section id="screen-crop-rec" class="app-screen">
+                    <div class="split-viewport">
+                        <!-- Parameters input (Left) -->
+                        <div class="viewport-form-side">
+                            <div class="form-header">
+                                <h2 data-t="crop_rec">Crop Recommendation</h2>
+                                <p>Input soil parameters and geographic profile to run AI recommendation models.</p>
+                            </div>
+                            
+                            <form class="portal-form" onsubmit="event.preventDefault(); triggerCropAnalysis();">
+                                <div class="form-grid-columns">
+                                    <div class="input-group">
+                                        <label data-t="nitrogen">Nitrogen (N)</label>
+                                        <input type="number" id="crop-n" min="0" placeholder="e.g. 90" required>
+                                    </div>
+                                    <div class="input-group">
+                                        <label data-t="phosphorus">Phosphorus (P)</label>
+                                        <input type="number" id="crop-p" min="0" placeholder="e.g. 42" required>
+                                    </div>
+                                </div>
+                                <div class="form-grid-columns">
+                                    <div class="input-group">
+                                        <label data-t="potassium">Potassium (K)</label>
+                                        <input type="number" id="crop-k" min="0" placeholder="e.g. 43" required>
+                                    </div>
+                                    <div class="input-group">
+                                        <label data-t="soil_ph">Soil pH Level</label>
+                                        <input type="number" step="0.1" id="crop-ph" min="0" max="14" placeholder="e.g. 6.5" required>
+                                    </div>
+                                </div>
+                                <div class="form-grid-columns">
+                                    <div class="input-group">
+                                        <label data-t="temp">Temp (°C)</label>
+                                        <input type="number" id="crop-temp" min="-10" max="60" placeholder="e.g. 25" required>
+                                    </div>
+                                    <div class="input-group">
+                                        <label data-t="humidity">Humidity (%)</label>
+                                        <input type="number" id="crop-hum" min="0" max="100" placeholder="e.g. 60" required>
+                                    </div>
+                                </div>
+                                <div class="input-group">
+                                    <label data-t="rainfall">Rainfall (mm)</label>
+                                    <input type="number" id="crop-rain" min="0" placeholder="e.g. 200" required>
+                                </div>
+
+                                <div class="input-group">
+                                    <label data-t="state_district">State / District</label>
+                                    <select id="crop-state">
+                                        <option value="Punjab">Punjab</option>
+                                        <option value="Haryana">Haryana</option>
+                                        <option value="UP">Uttar Pradesh</option>
+                                        <option value="Maharashtra">Maharashtra</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-grid-columns">
+                                    <div class="input-group">
+                                        <label data-t="season">Season</label>
+                                        <select id="crop-season">
+                                            <option value="Kharif">Kharif</option>
+                                            <option value="Rabi">Rabi</option>
+                                            <option value="Zaid">Zaid</option>
+                                        </select>
+                                    </div>
+                                    <div class="input-group">
+                                        <label data-t="soil_type">Soil Type</label>
+                                        <select id="crop-soil">
+                                            <option value="Alluvial">Alluvial</option>
+                                            <option value="Black">Black</option>
+                                            <option value="Red">Red</option>
+                                            <option value="Clayey">Clayey</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <button type="submit" class="btn btn-primary btn-full btn-ripple">
+                                    <span class="btn-text" data-t="analyze_btn">Analyze & Recommend</span>
+                                    <div class="btn-loader hidden"></div>
+                                </button>
+                            </form>
+                        </div>
+
+                        <!-- Result details (Right) -->
+                        <div class="viewport-result-side">
+                            <div class="result-placeholder" id="crop-result-placeholder">
+                                <span class="placeholder-icon">🌾</span>
+                                <h3>AI Prediction Pending</h3>
+                                <p>Fill out the soil nutrient parameters on the left and click submit to trigger recommendations.</p>
+                            </div>
+
+                            <div class="result-details-box hidden" id="crop-result-card">
+                                <div class="result-card-heading">
+                                    <span class="heading-badge">🌾</span>
+                                    <h3 id="crop-result-title">Best Match: Wheat (Malwa Shakti)</h3>
+                                    <span class="heading-score" id="crop-result-score">98.5% Suitability Score</span>
+                                </div>
+
+                                <div class="metric-row-portal">
+                                    <div class="metric-portal-item">
+                                        <span class="m-icon">📈</span>
+                                        <div class="m-meta">
+                                            <span data-t="yield">Yield</span>
+                                            <h4 id="crop-result-yield">4.5 t/ha</h4>
+                                        </div>
+                                    </div>
+                                    <div class="metric-portal-item">
+                                        <span class="m-icon">💧</span>
+                                        <div class="m-meta">
+                                            <span data-t="water">Water</span>
+                                            <h4 id="crop-result-water">Medium</h4>
+                                        </div>
+                                    </div>
+                                    <div class="metric-portal-item">
+                                        <span class="m-icon">☀️</span>
+                                        <div class="m-meta">
+                                            <span data-t="season">Season</span>
+                                            <h4 id="crop-result-season">Rabi</h4>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="reason-fold">
+                                    <h4 data-t="why_crop">Why this crop?</h4>
+                                    <p id="crop-result-reason">AI Analysis: Your soil pH (6.5) and high Nitrogen content are ideal for Wheat. The current Rabi season temperature (20-25°C) will maximize yield by 15%.</p>
+                                </div>
+
+                                <div class="result-charts-area">
+                                    <h4 data-t="insights">AI Smart Insights</h4>
+                                    <div class="insights-grid-horizontal">
+                                        <div class="insight-portal-mini">
+                                            <div class="i-meta">
+                                                <span data-t="soil_health">Soil Health</span>
+                                                <span class="color-brown">Excellent</span>
+                                            </div>
+                                            <div class="progress-bar"><div class="progress-fill bg-brown" style="width: 90%;"></div></div>
+                                        </div>
+                                        <div class="insight-portal-mini">
+                                            <div class="i-meta">
+                                                <span data-t="market_profit">Market Profit</span>
+                                                <span class="color-purple">High</span>
+                                            </div>
+                                            <div class="progress-bar"><div class="progress-fill bg-purple" style="width: 85%;"></div></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 12. LEAF DISEASE SCANNER SCREEN -->
+                <section id="screen-scan" class="app-screen">
+                    <div class="split-viewport">
+                        <!-- Camera Upload (Left) -->
+                        <div class="viewport-form-side">
+                            <div class="form-header">
+                                <h2 data-t="scanner_title">AI Leaf Scanner</h2>
+                                <p>Upload infected plant leaf images to identify agricultural disease pathogens.</p>
+                            </div>
+                            
+                            <div class="portal-scanner-frame" id="scanner-frame-box">
+                                <div class="laser-scanner-line"></div>
+                                <div class="leaf-icon-graphic" id="scanner-preview-icon">🍃</div>
+                                <img id="scanner-preview-img" class="hidden">
+                                <span class="scanner-instruction" data-t="place_leaf">Select crop leaf image file</span>
+                            </div>
+
+                            <input type="file" id="camera-file-input" accept="image/*" class="hidden" onchange="loadScannerImage(event)">
+                            <button class="btn btn-primary btn-full btn-ripple" onclick="triggerImageSelect()">
+                                📷 <span data-t="capture_leaf">SELECT FILE</span>
+                            </button>
+                            
+                            <!-- Scanner Loader Overlay -->
+                            <div class="scanner-loader-overlay hidden" id="scanner-analyzing-overlay">
+                                <div class="spinner"></div>
+                                <h3>Analyzing Leaf with AI...</h3>
+                            </div>
+                        </div>
+
+                        <!-- Remedies details (Right) -->
+                        <div class="viewport-result-side">
+                            <div class="result-placeholder" id="scanner-result-placeholder">
+                                <span class="placeholder-icon">🍂</span>
+                                <h3>Diagnostic Pending</h3>
+                                <p>Select and upload a crop leaf image on the left to run computer vision diagnostic models.</p>
+                            </div>
+
+                            <div class="result-details-box hidden" id="scanner-result-card">
+                                <div class="disease-header-portal">
+                                    <span class="d-emoji">🍂</span>
+                                    <div class="d-meta">
+                                        <h3 id="disease-name">Tomato Early Blight</h3>
+                                        <span class="disease-severity badge-high">High Risk</span>
+                                    </div>
+                                </div>
+
+                                <div class="metric-row-portal">
+                                    <div class="metric-portal-item" style="grid-column: span 3;">
+                                        <div class="m-meta" style="flex-direction: row; justify-content: space-between; width: 100%;">
+                                            <span>AI Diagnostic Confidence Score:</span>
+                                            <h4 id="disease-confidence" style="color: var(--primary-vibrant);">94%</h4>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="disease-prevention-portal">
+                                    <h4>Recommended Prevention & Remedy</h4>
+                                    <ul id="disease-remedies">
+                                        <li>Remove infected leaves from the lower section of the plant.</li>
+                                        <li>Apply Copper Fungicide or Organic Neem oil weekly.</li>
+                                        <li>Implement drip irrigation rather than overhead watering.</li>
+                                    </ul>
+                                </div>
+
+                                <div class="disease-actions-portal">
+                                    <button class="btn btn-primary btn-ripple btn-sm" onclick="resetScanner()"><span data-t="scan_another">Scan Another</span></button>
+                                    <button class="btn btn-outline btn-ripple btn-sm" onclick="navigateTo('screen-chat')"><span data-t="chat_expert">Ask AgriBot</span></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 13. WEATHER FORECAST SCREEN -->
+                <section id="screen-weather" class="app-screen">
+                    <div class="weather-forecast-portal">
+                        <!-- Main Current weather dashboard -->
+                        <div class="weather-portal-grid-header">
+                            <div class="current-weather-banner-portal">
+                                <span class="weather-large-icon">☀️</span>
+                                <div class="current-weather-text">
+                                    <h2>32°C</h2>
+                                    <h3>Ludhiana, Punjab</h3>
+                                    <span>Sunny Conditions • Humidity 45% • Wind 12 km/h</span>
+                                </div>
+                            </div>
+
+                            <div class="weather-advice-box-portal">
+                                <h4>💡 Agricultural Weather Guidance</h4>
+                                <p>Ideal conditions for spraying fertilizers and soil weeding. Maintain moderate irrigation schedules for rabi wheat harvests.</p>
+                            </div>
+                        </div>
+
+                        <!-- 7-Day Forecast Grid -->
+                        <h3 class="section-title">7-Day Agricultural Forecast</h3>
+                        <div class="forecast-list-portal" id="weather-forecast-list">
+                            <!-- Injected dynamically -->
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 14. FERTILIZER GUIDE SCREEN -->
+                <section id="screen-fertilizer" class="app-screen">
+                    <div class="split-viewport">
+                        <!-- Parameters input (Left) -->
+                        <div class="viewport-form-side">
+                            <div class="form-header">
+                                <h2 data-t="fert_guide">Fertilizer Guide</h2>
+                                <p>Calculate precise Nitrogen, DAP, or chemical fertilizer formulas based on crop and soil classes.</p>
+                            </div>
+                            
+                            <form class="portal-form" onsubmit="event.preventDefault(); calculateFertilizerRecommend();">
+                                <div class="input-group">
+                                    <label data-t="crop_type">Crop Type</label>
+                                    <select id="fert-crop-type">
+                                        <option value="Rice">Rice</option>
+                                        <option value="Wheat">Wheat</option>
+                                        <option value="Maize">Maize (Corn)</option>
+                                        <option value="Cotton">Cotton</option>
+                                        <option value="Sugarcane">Sugarcane</option>
+                                        <option value="Barley">Barley</option>
+                                        <option value="Oats">Oats</option>
+                                        <option value="Millet">Millet</option>
+                                        <option value="Sorghum">Sorghum</option>
+                                        <option value="Soybean">Soybean</option>
+                                        <option value="Groundnut">Groundnut (Peanut)</option>
+                                        <option value="Mustard">Mustard</option>
+                                        <option value="Potato">Potato</option>
+                                        <option value="Tomato">Tomato</option>
+                                        <option value="Onion">Onion</option>
+                                        <option value="Garlic">Garlic</option>
+                                        <option value="Ginger">Ginger</option>
+                                        <option value="Chili">Chili</option>
+                                        <option value="Turmeric">Turmeric</option>
+                                        <option value="Chickpeas">Chickpeas (Gram)</option>
+                                    </select>
+                                </div>
+                                <div class="input-group">
+                                    <label data-t="soil_type">Soil Type</label>
+                                    <select id="fert-soil-type">
+                                        <option value="Alluvial">Alluvial</option>
+                                        <option value="Clayey">Clayey</option>
+                                        <option value="Loamy">Loamy</option>
+                                        <option value="Black">Black</option>
+                                    </select>
+                                </div>
+
+                                <button type="submit" class="btn btn-primary btn-full btn-ripple">Get Fertilizer Guide</button>
+                            </form>
+                        </div>
+
+                        <!-- Result details (Right) -->
+                        <div class="viewport-result-side">
+                            <div class="result-placeholder" id="fert-result-placeholder">
+                                <span class="placeholder-icon">🧪</span>
+                                <h3>Dosage Calculator Idle</h3>
+                                <p>Select your crop species and soil type on the left to calculate recommended fertilizer values.</p>
+                            </div>
+
+                            <div class="result-details-box hidden" id="fert-result-card">
+                                <div class="result-card-heading">
+                                    <span class="heading-badge">🧪</span>
+                                    <h3 id="fert-result-name">Urea / DAP (Diammonium Phosphate)</h3>
+                                    <span class="heading-score">Optimal Dosage Calculated</span>
+                                </div>
+
+                                <div class="metric-row-portal">
+                                    <div class="metric-portal-item">
+                                        <div class="m-meta">
+                                            <span>Dosage</span>
+                                            <h4 id="fert-result-dose">50 kg / Acre</h4>
+                                        </div>
+                                    </div>
+                                    <div class="metric-portal-item">
+                                        <div class="m-meta">
+                                            <span>Timing</span>
+                                            <h4 id="fert-result-time">Tillering Stage</h4>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="reason-fold">
+                                    <h4>Application Guidelines</h4>
+                                    <ul id="fert-guidelines">
+                                        <li>Apply evenly in the morning hours to avoid sun volatilization.</li>
+                                        <li>Irrigate field slightly within 24 hours of application.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 15. FERTILIZER PREDICTION SCREEN -->
+                <section id="screen-fertilizer-pred" class="app-screen">
+                    <div class="split-viewport">
+                        <!-- Parameters input (Left) -->
+                        <div class="viewport-form-side">
+                            <div class="form-header">
+                                <h2 data-t="fert_pred">Fertilizer Prediction</h2>
+                                <p>Let AI models forecast chemical composition targets for your soil.</p>
+                            </div>
+                            
+                            <form class="portal-form" onsubmit="event.preventDefault(); triggerFertilizerPrediction();">
+                                <div class="input-group">
+                                    <label data-t="crop_type">Crop Type</label>
+                                    <select id="pred-crop-type">
+                                        <option value="Rice">Rice</option>
+                                        <option value="Wheat">Wheat</option>
+                                        <option value="Maize">Maize (Corn)</option>
+                                        <option value="Cotton">Cotton</option>
+                                        <option value="Sugarcane">Sugarcane</option>
+                                        <option value="Barley">Barley</option>
+                                        <option value="Oats">Oats</option>
+                                        <option value="Millet">Millet</option>
+                                        <option value="Sorghum">Sorghum</option>
+                                        <option value="Soybean">Soybean</option>
+                                        <option value="Groundnut">Groundnut (Peanut)</option>
+                                        <option value="Mustard">Mustard</option>
+                                        <option value="Potato">Potato</option>
+                                        <option value="Tomato">Tomato</option>
+                                        <option value="Onion">Onion</option>
+                                        <option value="Garlic">Garlic</option>
+                                        <option value="Ginger">Ginger</option>
+                                        <option value="Chili">Chili</option>
+                                        <option value="Turmeric">Turmeric</option>
+                                        <option value="Chickpeas">Chickpeas (Gram)</option>
+                                    </select>
+                                </div>
+
+                                <div class="input-group">
+                                    <label data-t="soil_type">Soil Type</label>
+                                    <select id="pred-soil-type">
+                                        <option value="Black">Black</option>
+                                        <option value="Clayey">Clayey</option>
+                                        <option value="Loamy">Loamy</option>
+                                        <option value="Red">Red</option>
+                                        <option value="Sandy">Sandy</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-grid-columns">
+                                    <div class="input-group">
+                                        <label data-t="nitrogen">Nitrogen (N)</label>
+                                        <input type="number" id="pred-n" placeholder="e.g. 50" required>
+                                    </div>
+                                    <div class="input-group">
+                                        <label data-t="phosphorus">Phosphorus (P)</label>
+                                        <input type="number" id="pred-p" placeholder="e.g. 30" required>
+                                    </div>
+                                </div>
+                                <div class="form-grid-columns">
+                                    <div class="input-group">
+                                        <label data-t="potassium">Potassium (K)</label>
+                                        <input type="number" id="pred-k" placeholder="e.g. 40" required>
+                                    </div>
+                                    <div class="input-group">
+                                        <label data-t="soil_ph">Soil pH</label>
+                                        <input type="number" step="0.1" id="pred-ph" placeholder="e.g. 6.2" required>
+                                    </div>
+                                </div>
+                                <div class="form-grid-columns">
+                                    <div class="input-group">
+                                        <label>Moisture (%)</label>
+                                        <input type="number" id="pred-moisture" placeholder="e.g. 45" required>
+                                    </div>
+                                    <div class="input-group">
+                                        <label data-t="temp">Temp (°C)</label>
+                                        <input type="number" id="pred-temp" placeholder="e.g. 26" required>
+                                    </div>
+                                </div>
+
+                                <button type="submit" class="btn btn-primary btn-full btn-ripple">
+                                    <span class="btn-text">Predict Fertilizer</span>
+                                    <div class="btn-loader hidden"></div>
+                                </button>
+                            </form>
+                        </div>
+
+                        <!-- Result details (Right) -->
+                        <div class="viewport-result-side">
+                            <div class="result-placeholder" id="pred-result-placeholder">
+                                <span class="placeholder-icon">📈</span>
+                                <h3>Fertility Forecast Idle</h3>
+                                <p>Input N-P-K and environmental moisture on the left to estimate compound suitability indexes.</p>
+                            </div>
+
+                            <div class="result-details-box hidden" id="pred-result-card">
+                                <div class="result-card-heading">
+                                    <span class="heading-badge">📈</span>
+                                    <h3 id="pred-result-title">Predicted: NPK 10-26-26</h3>
+                                    <span class="heading-score" id="pred-result-score">96% Suitability</span>
+                                </div>
+
+                                <div class="metric-row-portal">
+                                    <div class="metric-portal-item">
+                                        <div class="m-meta">
+                                            <span>Qty</span>
+                                            <h4 id="pred-result-qty">40 kg/acre</h4>
+                                        </div>
+                                    </div>
+                                    <div class="metric-portal-item">
+                                        <div class="m-meta">
+                                            <span data-t="yield">Yield Increase</span>
+                                            <h4>+18%</h4>
+                                        </div>
+                                    </div>
+                                    <div class="metric-portal-item">
+                                        <div class="m-meta">
+                                            <span>Application Time</span>
+                                            <h4>Post-Sowing</h4>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="nutrient-progress-block">
+                                    <span>Nutrient Balance</span>
+                                    <div class="progress-bar"><div class="progress-fill bg-green" style="width: 90%;"></div></div>
+                                </div>
+
+                                <div class="result-charts-area">
+                                    <h4 data-t="insights">AI Smart Insights</h4>
+                                    <div class="insights-grid-horizontal">
+                                        <div class="insight-portal-mini">
+                                            <div class="i-meta">
+                                                <span>Fertility Score</span>
+                                                <span class="color-green">High</span>
+                                            </div>
+                                            <div class="progress-bar"><div class="progress-fill bg-green" style="width: 92%;"></div></div>
+                                        </div>
+                                        <div class="insight-portal-mini">
+                                            <div class="i-meta">
+                                                <span>N Deficiency</span>
+                                                <span class="color-red">Low</span>
+                                            </div>
+                                            <div class="progress-bar"><div class="progress-fill bg-red" style="width: 25%;"></div></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="tips-grid-portal">
+                                    <div class="tip-card">
+                                        <span>🌇</span>
+                                        <div class="t-body">
+                                            <h4>Best Time</h4>
+                                            <p>Evening application</p>
+                                        </div>
+                                    </div>
+                                    <div class="tip-card">
+                                        <span>💧</span>
+                                        <div class="t-body">
+                                            <h4>Watering</h4>
+                                            <p>Moderate moisture</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="alert-item">
+                                    <span class="alert-icon">🛡</span>
+                                    <div class="alert-content">
+                                        <h5>Soil Damage Prevention</h5>
+                                        <p>Avoid consecutive heavy application to prevent acidification.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 16. GOVERNMENT SCHEMES SCREEN -->
+                <section id="screen-schemes" class="app-screen">
+                    <div class="schemes-portal-layout">
+                        <div class="schemes-portal-header">
+                            <h2 data-t="schemes">Government Welfare Schemes</h2>
+                            <div class="search-field-wrapper">
+                                <input type="text" id="scheme-search-input" placeholder="Search government schemes..." onkeyup="filterSchemes(this.value)">
+                            </div>
+                        </div>
+                        
+                        <div class="schemes-grid-portal" id="schemes-list-content">
+                            <!-- Injected dynamically -->
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 17. SCHEME DETAIL SCREEN -->
+                <section id="screen-scheme-detail" class="app-screen">
+                    <div class="scheme-details-container-portal">
+                        <div class="scheme-details-card">
+                            <span class="scheme-logo-large">🏛️</span>
+                            <h3 id="scheme-card-name">PM-Kisan Nidhi</h3>
+                            <p class="scheme-desc-text" id="scheme-card-desc">Provides ₹6,000 yearly support in three equal installments to small and marginal farming families.</p>
+                            
+                            <div class="eligibility-box">
+                                <h4>Eligibility Criteria</h4>
+                                <ul id="scheme-eligibility-list">
+                                    <li>Landholder farming families with cultivable land.</li>
+                                    <li>Citizenship of India.</li>
+                                </ul>
+                            </div>
+
+                            <div class="scheme-action-buttons">
+                                <button class="btn btn-outline" onclick="navigateTo('screen-schemes')">Back to Schemes</button>
+                                <button class="btn btn-primary" onclick="showApplyModal()">Apply Now</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 18. USER PROFILE SCREEN -->
+                <section id="screen-profile" class="app-screen">
+                    <div class="profile-container-portal">
+                        <div class="profile-card-top-portal">
+                            <span class="profile-avatar-big">👨‍🌾</span>
+                            <div class="profile-identity">
+                                <h3 id="profile-name-val">Arjun Singh</h3>
+                                <p id="profile-loc-val">Ludhiana, Punjab</p>
+                            </div>
+                            <div class="profile-actions-portal">
+                                <button class="btn btn-outline btn-sm" onclick="navigateTo('screen-edit-profile')">Edit Profile ✏</button>
+                                <button class="btn btn-outline btn-sm" onclick="navigateTo('screen-settings')">Settings ⚙</button>
+                            </div>
+                        </div>
+
+                        <h3 class="section-title" style="margin-top: 30px;">Farm Configuration & Details</h3>
+                        
+                        <div class="farm-details-grid-portal">
+                            <div class="detail-card">
+                                <span class="detail-label">Farm Size</span>
+                                <h4 id="profile-size-val">5.5 Acres</h4>
+                            </div>
+                            <div class="detail-card">
+                                <span class="detail-label">Soil Classification</span>
+                                <h4 id="profile-soil-val">Clay Loam</h4>
+                            </div>
+                            <div class="detail-card">
+                                <span class="detail-label">Primary Crops</span>
+                                <h4 id="profile-crops-val">Wheat, Rice</h4>
+                            </div>
+                        </div>
+
+                        <div class="sync-status-card" style="margin-top: 24px;">
+                            <span>☁ Database Connectivity</span>
+                            <p class="sync-success">Connected & Synced with Firebase RTDB Session</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 19. EDIT PROFILE SCREEN -->
+                <section id="screen-edit-profile" class="app-screen">
+                    <div class="auth-wrapper-fullscreen">
+                        <div class="auth-box-card" style="max-width: 450px;">
+                            <h2>Edit Portal Profile</h2>
+                            <form id="edit-profile-form" onsubmit="saveProfileChanges(event)">
+                                <div class="input-group">
+                                    <label>Full Name</label>
+                                    <input type="text" id="edit-profile-name" value="Arjun Singh" required>
+                                </div>
+                                <div class="input-group">
+                                    <label>District / State</label>
+                                    <input type="text" id="edit-profile-loc" value="Ludhiana, Punjab" required>
+                                </div>
+                                <div class="input-group">
+                                    <label>Farm Size (Acres)</label>
+                                    <input type="number" step="0.1" id="edit-profile-size" value="5.5" required>
+                                </div>
+                                <div class="input-group">
+                                    <label>Soil Classification</label>
+                                    <input type="text" id="edit-profile-soil" value="Clay Loam" required>
+                                </div>
+                                <div class="input-group">
+                                    <label>Primary Crops</label>
+                                    <input type="text" id="edit-profile-crops" value="Wheat, Rice" required>
+                                </div>
+
+                                <div class="form-actions-split">
+                                    <button type="button" class="btn btn-outline btn-sm" onclick="navigateTo('screen-profile')">Cancel</button>
+                                    <button type="submit" class="btn btn-primary btn-sm">Save Changes</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 20. SETTINGS SCREEN -->
+                <section id="screen-settings" class="app-screen">
+                    <div class="profile-container-portal" style="max-width: 600px;">
+                        <h2 data-t="settings" style="margin-bottom: 24px;">Portal Settings</h2>
+                        
+                        <div class="settings-card">
+                            <h4 data-t="lang_region">Language & Region</h4>
+                            <div class="input-group" style="margin-top: 10px;">
+                                <label data-t="app_lang">App Language</label>
+                                <select id="settings-lang-select" onchange="changeLanguage(this.value)">
+                                    <option value="English">English</option>
+                                    <option value="Hindi (हिन्दी)">Hindi (हिन्दी)</option>
+                                    <option value="Punjabi (ਪੰਜਾਬੀ)">Punjabi (ਪੰਜਾਬੀ)</option>
+                                    <option value="Marathi (मराठी)">Marathi (मराठी)</option>
+                                    <option value="Gujarati (ગુજરાતી)">Gujarati (ગુજરાતી)</option>
+                                    <option value="Kannada (ಕನ್ನಡ)">Kannada (ಕನ್ನಡ)</option>
+                                    <option value="Telugu (తెలుగు)">Telugu (తెలుగు)</option>
+                                    <option value="Tamil (தமிழ்)">Tamil (தமிழ்)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="settings-card" style="margin-top: 20px;">
+                            <h4>Portal Color Theme</h4>
+                            <div class="theme-options" style="margin-top: 10px;">
+                                <button class="theme-btn theme-green active" onclick="changeTheme('green')"></button>
+                                <button class="theme-btn theme-dark" onclick="changeTheme('dark')"></button>
+                                <button class="theme-btn theme-earth" onclick="changeTheme('earth')"></button>
+                            </div>
+                        </div>
+
+                        <div class="settings-card" style="margin-top: 20px;">
+                            <h4>Account Management</h4>
+                            <button class="btn btn-outline color-red btn-sm" onclick="logoutUser()" style="margin-top: 10px;">Logout from Session</button>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
         </div>
+        
+    </div>
 
-        <!-- Dashboard Screen -->
-        <div id="home-screen" class="screen active">
-            <div class="welcome-card">
-                <h2>Welcome Back!</h2>
-                <p>Arjun Singh • Ludhiana</p>
-            </div>
+    <!-- VOICE ASSISTANT BOTTOM SHEET -->
+    <div class="bottom-sheet-overlay hidden" id="voice-assistant-sheet">
+        <div class="bottom-sheet">
+            <div class="sheet-drag-handle"></div>
+            <div class="sheet-body text-center">
+                <h3 id="voice-title-label">AgriBot is listening...</h3>
+                <p id="voice-subtitle-label" class="sheet-desc">Speak your farming concern</p>
+                
+                <div class="mic-wave-container">
+                    <div class="mic-wave"></div>
+                    <div class="mic-wave delay-1"></div>
+                    <div class="mic-wave delay-2"></div>
+                    <div class="mic-icon-bubble">🎤</div>
+                </div>
 
-            <div class="weather-widget">
-                <div>
-                    <div style="font-weight: 700;">32°C</div>
-                    <div style="font-size: 12px;">Sunny • Humidity 45%</div>
+                <div class="mock-voice-samples">
+                    <span>Try saying:</span>
+                    <p class="voice-sample-bubble" id="voice-sample-btn" onclick="triggerVoiceSpeakSample()">"What is the best fertilizer for wheat?"</p>
                 </div>
-                <div style="font-size: 40px;">☀️</div>
-            </div>
 
-            <h3 style="font-weight: 800; font-size: 18px; margin-bottom: 15px;">Quick AI Tools</h3>
-            <div class="tool-grid">
-                <div class="tool-card" onclick="showScreen('market-screen')">
-                    <div class="icon">📈</div>
-                    <span>Market Prices</span>
-                </div>
-                <div class="tool-card" onclick="showScreen('scan-screen')">
-                    <div class="icon">🔍</div>
-                    <span>Leaf Scanner</span>
-                </div>
-                <div class="tool-card">
-                    <div class="icon">🧪</div>
-                    <span>Soil Analysis</span>
-                </div>
-                <div class="tool-card" onclick="showScreen('schemes-screen')">
-                    <div class="icon">🏛️</div>
-                    <span>Govt Schemes</span>
-                </div>
-                <div class="tool-card">
-                    <div class="icon">💧</div>
-                    <span>Irrigation</span>
-                </div>
-                <div class="tool-card">
-                    <div class="icon">📜</div>
-                    <span>Reports</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Market Screen -->
-        <div id="market-screen" class="screen">
-            <h1 style="margin-bottom: 20px;">Live Mandi Prices</h1>
-            <div class="search-bar">
-                <span>🔍</span>
-                <input type="text" placeholder="Search 20+ crops..." onkeyup="filterCrops(this.value)">
-            </div>
-            <div id="crops-list">
-                <!-- JS will inject 20 crops here -->
-            </div>
-        </div>
-
-        <!-- Scan Screen -->
-        <div id="scan-screen" class="screen">
-            <h1 style="margin-bottom: 20px;">AI Leaf Scanner</h1>
-            <div class="scan-container">
-                <div class="scan-box">
-                    <div class="scan-line"></div>
-                    <div style="font-size: 50px;">🍃</div>
-                    <p style="font-weight: 700; color: #888;">Place Leaf in Center</p>
-                </div>
-                <button class="btn-action">CAPTURE LEAF</button>
-                <p style="font-size: 11px; margin-top: 15px; color: #666;">AI will verify if image is a leaf first.</p>
-            </div>
-        </div>
-
-        <!-- Schemes Screen -->
-        <div id="schemes-screen" class="screen">
-            <h1 style="margin-bottom: 20px;">Welfare Schemes</h1>
-            <div id="schemes-list">
-                <!-- JS will inject schemes here -->
-            </div>
-        </div>
-
-        <!-- Bottom Navigation -->
-        <div class="nav-bar">
-            <div class="nav-item active" onclick="showScreen('home-screen')">
-                <div class="nav-icon">🏠</div>
-                <div>Home</div>
-            </div>
-            <div class="nav-item" onclick="showScreen('scan-screen')">
-                <div class="nav-icon">🔍</div>
-                <div>Scan</div>
-            </div>
-            <div class="nav-item" onclick="showScreen('schemes-screen')">
-                <div class="nav-icon">🏛️</div>
-                <div>Schemes</div>
-            </div>
-            <div class="nav-item" onclick="showScreen('market-screen')">
-                <div class="nav-icon">📈</div>
-                <div>Market</div>
-            </div>
-            <div class="nav-item">
-                <div class="nav-icon">👤</div>
-                <div>Profile</div>
+                <button class="btn btn-outline btn-full btn-ripple" onclick="toggleVoiceSheet(false)">Cancel</button>
             </div>
         </div>
     </div>
 
-    <script src="app.js"></script>
+    <!-- SCHEME APPLY MODAL -->
+    <div class="modal-overlay hidden" id="scheme-apply-modal">
+        <div class="modal-content">
+            <h3>Apply for Welfare Scheme</h3>
+            <p>Fill out the basic criteria to submit your application details directly to the scheme registrar.</p>
+            <form id="scheme-apply-form" onsubmit="submitSchemeApplication(event)">
+                <div class="input-group">
+                    <label>Aadhaar Card Number</label>
+                    <input type="text" id="scheme-apply-aadhaar" maxlength="12" placeholder="12-digit UIDAI number" required>
+                </div>
+                <div class="input-group">
+                    <label>Bank Account Number</label>
+                    <input type="text" id="scheme-apply-bank" placeholder="IFSC & Account details" required>
+                </div>
+                <div class="input-group">
+                    <label>Landholding size (Acres)</label>
+                    <input type="number" id="scheme-apply-land" step="0.01" value="5.5" required>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-outline" onclick="closeApplyModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Submit Application</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- GOOGLE ACCOUNT CHOOSER MODAL -->
+    <div class="modal-overlay hidden" id="google-login-modal">
+        <div class="modal-content google-chooser-content">
+            <div class="google-logo-container">
+                <svg viewBox="0 0 24 24" width="24" height="24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" fill="#FBBC05"/>
+                    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" fill="#EA4335"/>
+                </svg>
+            </div>
+            <h3>Choose an account</h3>
+            <p class="google-chooser-subtitle">to continue to AgriBot Smart Farming Portal</p>
+            <div class="google-accounts-list">
+                <div class="google-account-item btn-ripple" onclick="loginWithSelectedGoogleAccount('kanamalanarendra1162.sse@saveeth.com')">
+                    <div class="account-avatar">KN</div>
+                    <div class="account-details">
+                        <div class="account-name">Narendra</div>
+                        <div class="account-email">kanamalanarendra1162.sse@saveeth.com</div>
+                    </div>
+                </div>
+                <div class="google-account-item btn-ripple" onclick="loginWithSelectedGoogleAccount('arjun.singh@gmail.com')">
+                    <div class="account-avatar">AS</div>
+                    <div class="account-details">
+                        <div class="account-name">Arjun Singh</div>
+                        <div class="account-email">arjun.singh@gmail.com</div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-actions" style="margin-top: 15px;">
+                <button type="button" class="btn btn-outline" style="width: 100%;" onclick="closeGoogleChooser()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK Script loader (ES Modules) -->
+    <script type="module" async src="js/app.js"></script>
 </body>
 </html>

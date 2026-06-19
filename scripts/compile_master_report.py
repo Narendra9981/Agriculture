@@ -669,31 +669,18 @@ def main():
         f.write(html_content)
     print(f"Master HTML dashboard compiled at {output_path} with download links.")
 
-    # 4. Copy website assets to public root
+    # 4. Copy website assets recursively to public root
     import shutil
-    for fname in ["index.html", "style.css", "app.js"]:
-        src = os.path.join("website", fname)
-        dst = os.path.join("public", fname)
-        if os.path.exists(src):
-            shutil.copy(src, dst)
-            print(f"Copied website asset {src} to {dst}")
-            
-    # Add redirection from website reports button to test dashboard
-    web_index_path = "public/index.html"
-    if os.path.exists(web_index_path):
-        with open(web_index_path, "r", encoding="utf-8") as f:
-            content = f.read()
-        content = content.replace("\r\n", "\n")
-        target_btn = '<div class="tool-card">\n                    <div class="icon">📜</div>\n                    <span>Reports</span>\n                </div>'
-        replacement_btn = '<div class="tool-card" onclick="window.location.href=\'reports/index.html\'">\n                    <div class="icon">📜</div>\n                    <span>Reports</span>\n                </div>'
-        if target_btn in content:
-            content = content.replace(target_btn, replacement_btn)
-        else:
-            # Fallback if whitespace differs
-            content = content.replace('<div class="tool-card">', '<div class="tool-card" onclick="window.location.href=\'reports/index.html\'">', 1)
-        with open(web_index_path, "w", encoding="utf-8") as f:
-            f.write(content)
-        print("Updated website index.html with Reports button redirection link.")
+    web_src = "website"
+    if os.path.exists(web_src):
+        for root_dir, dirs, files in os.walk(web_src):
+            for file in files:
+                src_file = os.path.join(root_dir, file)
+                rel_path = os.path.relpath(src_file, web_src)
+                dst_file = os.path.join("public", rel_path)
+                os.makedirs(os.path.dirname(dst_file), exist_ok=True)
+                shutil.copy(src_file, dst_file)
+                print(f"Copied website asset {src_file} to {dst_file}")
 
 if __name__ == "__main__":
     main()
