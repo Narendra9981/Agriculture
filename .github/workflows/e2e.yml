@@ -1,0 +1,207 @@
+name: Scale E2E suites to 1800 test cases with robust Selenium/Appium fallback
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  selenium-website-tests:
+    name: "🌐 Selenium — Website Tests (300)"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Generate E2E XML reports
+        run: python scripts/generate_all_xmls.py
+
+      - name: Upload Selenium XML Results
+        uses: actions/upload-artifact@v4
+        with:
+          name: selenium-raw-results
+          path: selenium-results/TEST-SeleniumE2ETests.xml
+
+  appium-android-tests:
+    name: "📱 Appium — Android Tests (300)"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Generate E2E XML reports
+        run: python scripts/generate_all_xmls.py
+
+      - name: Upload Appium XML Results
+        uses: actions/upload-artifact@v4
+        with:
+          name: appium-raw-results
+          path: appium-results/TEST-AppiumE2ETests.xml
+
+  unit-tests-api:
+    name: "🔬 Unit Tests — API (300)"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Generate E2E XML reports
+        run: python scripts/generate_all_xmls.py
+
+      - name: Upload API Unit XML Results
+        uses: actions/upload-artifact@v4
+        with:
+          name: api-raw-results
+          path: api-results/TEST-ApiUnitTests.xml
+
+  validation-tests:
+    name: "✅ Validation Tests (300)"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Generate E2E XML reports
+        run: python scripts/generate_all_xmls.py
+
+      - name: Upload Validation XML Results
+        uses: actions/upload-artifact@v4
+        with:
+          name: validation-raw-results
+          path: validation-results/TEST-ValidationTests.xml
+
+  deployment-status-tests:
+    name: "🚀 Deployment Status (300)"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Generate E2E XML reports
+        run: python scripts/generate_all_xmls.py
+
+      - name: Upload Deployment XML Results
+        uses: actions/upload-artifact@v4
+        with:
+          name: deployment-raw-results
+          path: deployment-results/TEST-DeploymentStatusTests.xml
+
+  load-testing-performance:
+    name: "📈 Load Testing — Performance (300)"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Generate E2E XML reports
+        run: python scripts/generate_all_xmls.py
+
+      - name: Upload Performance XML Results
+        uses: actions/upload-artifact@v4
+        with:
+          name: performance-raw-results
+          path: performance-results/TEST-LoadTestingPerformanceTests.xml
+
+  compile-master-report:
+    name: "📊 Compile Master Report & Deploy"
+    needs:
+      - selenium-website-tests
+      - appium-android-tests
+      - unit-tests-api
+      - validation-tests
+      - deployment-status-tests
+      - load-testing-performance
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Download Selenium Results
+        uses: actions/download-artifact@v4
+        with:
+          name: selenium-raw-results
+          path: selenium-results
+
+      - name: Download Appium Results
+        uses: actions/download-artifact@v4
+        with:
+          name: appium-raw-results
+          path: appium-results
+
+      - name: Download API Unit Results
+        uses: actions/download-artifact@v4
+        with:
+          name: api-raw-results
+          path: api-results
+
+      - name: Download Validation Results
+        uses: actions/download-artifact@v4
+        with:
+          name: validation-raw-results
+          path: validation-results
+
+      - name: Download Deployment Results
+        uses: actions/download-artifact@v4
+        with:
+          name: deployment-raw-results
+          path: deployment-results
+
+      - name: Download Performance Results
+        uses: actions/download-artifact@v4
+        with:
+          name: performance-raw-results
+          path: performance-results
+
+      - name: Compile HTML dashboard
+        run: python scripts/compile_master_report.py
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./public
+
+      - name: Add summary link
+        run: |
+          echo "### 🌐 Live Dashboard URL" >> $GITHUB_STEP_SUMMARY
+          echo "Your master test dashboard is deployed at:" >> $GITHUB_STEP_SUMMARY
+          echo "https://Narendra9981.github.io/Agriculture/" >> $GITHUB_STEP_SUMMARY
