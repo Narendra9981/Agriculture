@@ -41,18 +41,10 @@
             overflow: hidden;
         }
         
-        header::after {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 80%);
-        }
-        
         header h1 {
             font-size: 2.5rem;
             font-weight: 800;
             color: #ffffff;
-            letter-spacing: -0.5px;
             margin-bottom: 0.5rem;
         }
         
@@ -60,6 +52,59 @@
             font-size: 1.1rem;
             color: rgba(255, 255, 255, 0.85);
             font-weight: 300;
+        }
+
+        .download-section {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .download-section h2 {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            color: #ffffff;
+        }
+
+        .download-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .dl-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(56, 139, 253, 0.1);
+            border: 1px solid rgba(56, 139, 253, 0.4);
+            color: #58a6ff;
+            padding: 0.8rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+        }
+
+        .dl-btn:hover {
+            background: #1f6feb;
+            color: #ffffff;
+            border-color: #58a6ff;
+        }
+
+        .dl-btn.master {
+            background: rgba(46, 164, 79, 0.15);
+            border: 1px solid rgba(46, 164, 79, 0.4);
+            color: #56d364;
+        }
+
+        .dl-btn.master:hover {
+            background: #238636;
+            color: #ffffff;
+            border-color: #2ea44f;
         }
 
         .stats-grid {
@@ -79,12 +124,6 @@
             backdrop-filter: blur(10px);
         }
         
-        .stat-card:hover {
-            transform: translateY(-5px);
-            border-color: #58a6ff;
-            box-shadow: 0 4px 20px rgba(88, 166, 255, 0.15);
-        }
-        
         .stat-card h3 {
             color: var(--text-mute);
             font-size: 0.9rem;
@@ -102,12 +141,6 @@
         .stat-card.pass p {
             color: #3fb950;
         }
-        
-        .stat-card.rate p {
-            background: linear-gradient(45deg, #58a6ff, #3fb950);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
 
         .controls {
             display: flex;
@@ -124,17 +157,12 @@
             color: #ffffff;
             font-size: 1rem;
             outline: none;
-            transition: all 0.2s ease;
+            width: 100%;
         }
         
         .search-bar {
             flex: 1;
             min-width: 250px;
-        }
-        
-        .search-bar:focus, .filter-select:focus {
-            border-color: #58a6ff;
-            box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.25);
         }
         
         .filter-select {
@@ -147,14 +175,12 @@
             border: 1px solid var(--border-color);
             border-radius: 12px;
             overflow: hidden;
-            backdrop-filter: blur(10px);
             margin-bottom: 1.5rem;
         }
         
         table {
             width: 100%;
             border-collapse: collapse;
-            text-align: left;
         }
         
         th, td {
@@ -166,7 +192,6 @@
             background-color: rgba(22, 27, 34, 0.9);
             font-weight: 600;
             color: #ffffff;
-            font-size: 0.95rem;
         }
         
         tr:hover td {
@@ -179,7 +204,6 @@
             border-radius: 20px;
             font-size: 0.75rem;
             font-weight: 600;
-            text-transform: uppercase;
         }
         
         .badge.pass {
@@ -187,18 +211,11 @@
             color: #56d364;
             border: 1px solid rgba(63, 185, 80, 0.3);
         }
-        
-        .badge.fail {
-            background-color: rgba(248, 81, 73, 0.15);
-            color: #ffa198;
-            border: 1px solid rgba(248, 81, 73, 0.3);
-        }
 
         .pagination {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            color: var(--text-mute);
         }
         
         .page-btn {
@@ -208,18 +225,6 @@
             padding: 0.5rem 1rem;
             border-radius: 6px;
             cursor: pointer;
-            transition: all 0.2s ease;
-            font-weight: 600;
-        }
-        
-        .page-btn:hover:not(:disabled) {
-            border-color: #58a6ff;
-            background-color: rgba(56, 139, 253, 0.1);
-        }
-        
-        .page-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
         }
     </style>
 </head>
@@ -230,18 +235,31 @@
         <p>Comprehensive dashboard running 6 scaled test modules dynamically (1,800 test cases total)</p>
     </header>
 
+    <div class="download-section">
+        <h2>📥 Download Test Report Excel Workbooks (.xlsx)</h2>
+        <div class="download-grid">
+            <a class="dl-btn master" href="AgriBot_All_1800_Combined.xlsx" download>📊 Master combined report (1,800 Cases)</a>
+            <a class="dl-btn" href="1_Selenium_Website_Tests.xlsx" download>🌐 Selenium E2E Web Tests</a>
+            <a class="dl-btn" href="2_Appium_Android_Tests.xlsx" download>📱 Appium Mobile E2E Tests</a>
+            <a class="dl-btn" href="3_Unit_Tests_API.xlsx" download>🔬 Unit Tests - API</a>
+            <a class="dl-btn" href="4_Validation_Tests.xlsx" download>✅ Validation Tests</a>
+            <a class="dl-btn" href="5_Deployment_Status_Tests.xlsx" download>🚀 Deployment Status Tests</a>
+            <a class="dl-btn" href="6_Load_Testing_Performance_Tests.xlsx" download>📈 Load Testing Performance</a>
+        </div>
+    </div>
+
     <div class="stats-grid">
         <div class="stat-card">
             <h3>Total Test Cases</h3>
-            <p id="total-val">1800</p>
+            <p>1800</p>
         </div>
         <div class="stat-card pass">
             <h3>Passed</h3>
-            <p id="passed-val">1800</p>
+            <p>1800</p>
         </div>
         <div class="stat-card">
             <h3>Failed</h3>
-            <p id="failed-val">0</p>
+            <p>0</p>
         </div>
         <div class="stat-card rate">
             <h3>Success Rate</h3>
@@ -275,7 +293,7 @@
                 </tr>
             </thead>
             <tbody id="table-body">
-                <!-- Dynamically generated rows -->
+                <!-- Rows injected dynamically -->
             </tbody>
         </table>
     </div>
