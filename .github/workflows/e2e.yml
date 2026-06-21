@@ -168,6 +168,9 @@ jobs:
       - deployment-status-tests
       - load-testing-performance
     runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: https://Narendra9981.github.io/Agriculture/
     permissions:
       contents: write
     steps:
