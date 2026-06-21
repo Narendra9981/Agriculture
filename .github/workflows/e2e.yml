@@ -170,7 +170,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: github-pages
-      url: https://Narendra9981.github.io/Agriculture/
+      url: https://narendra9981.github.io/Agriculture/
     permissions:
       contents: write
       deployments: write
@@ -235,4 +235,4 @@ jobs:
         run: |
           echo "### 🌐 Live Dashboard URL" >> $GITHUB_STEP_SUMMARY
           echo "Your master test dashboard is deployed at:" >> $GITHUB_STEP_SUMMARY
-          echo "https://Narendra9981.github.io/Agriculture/" >> $GITHUB_STEP_SUMMARY
+          echo "https://narendra9981.github.io/Agriculture/" >> $GITHUB_STEP_SUMMARY
