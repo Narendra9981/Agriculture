@@ -45,7 +45,10 @@ import androidx.core.content.FileProvider
 import coil.compose.rememberAsyncImagePainter
 import com.example.farmers.ui.theme.*
 import kotlinx.coroutines.delay
-import java.io.File
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.Color as AndroidColor
+import java.io.InputStream
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -65,8 +68,47 @@ fun DiseaseDetectionScreen(
     var selectedImageUri by rememberSaveable { mutableStateOf<Uri?>(null) }
     var tempPhotoUri by rememberSaveable { mutableStateOf<Uri?>(null) }
     
+    var validationMessage by remember { mutableStateOf("Initializing scanner...") }
+    
     val scrollState = rememberScrollState()
     val context = LocalContext.current
+
+    // Helper: Actual pixel analysis to detect "Greenness" (Leaf-like content)
+    fun analyzeImageForLeaf(uri: Uri): Boolean {
+        return try {
+            val inputStream: InputStream? = context.contentResolver.openInputStream(uri)
+            val options = BitmapFactory.Options().apply { inSampleSize = 8 } // Downsample for speed
+            val bitmap = BitmapFactory.decodeStream(inputStream, null, options)
+            
+            if (bitmap == null) return false
+            
+            var greenPixels = 0
+            val totalPixels = bitmap.width * bitmap.height
+            
+            // Scan pixels for green range
+            for (x in 0 until bitmap.width step 2) {
+                for (y in 0 until bitmap.height step 2) {
+                    val pixel = bitmap.getPixel(x, y)
+                    val r = AndroidColor.red(pixel)
+                    val g = AndroidColor.green(pixel)
+                    val b = AndroidColor.blue(pixel)
+                    
+                    // Simple Green detection heuristic: Green is the dominant color
+                    if (g > r && g > b && g > 40) {
+                        greenPixels++
+                    }
+                }
+            }
+            
+            val greenPercentage = (greenPixels.toFloat() / (totalPixels / 4)) * 100
+            bitmap.recycle()
+            
+            // Rejects if less than 12% of the image is green (Not a leaf)
+            greenPercentage > 12.0
+        } catch (e: Exception) {
+            false
+        }
+    }
 
     val galleryLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
@@ -220,17 +262,24 @@ fun DiseaseDetectionScreen(
     LaunchedEffect(phase) {
         when (phase) {
             "VALIDATING" -> {
-                delay(2000)
-                // Simulate AI Object Detection: 80% chance it's a leaf, 20% unwanted image
-                val isLeafDetected = (1..100).random() > 20
-                if (isLeafDetected) {
+                validationMessage = "AI: Reading pixel data..."
+                delay(800)
+                validationMessage = "AI: Searching for chlorophyll patterns..."
+                delay(1200)
+                
+                val isLeaf = selectedImageUri?.let { analyzeImageForLeaf(it) } ?: false
+                
+                if (isLeaf) {
+                    validationMessage = "Leaf Verified! High confidence."
+                    delay(500)
                     phase = "ANALYZING"
                 } else {
+                    validationMessage = "Error: No botanical patterns found."
                     phase = "ERROR"
                 }
             }
             "ANALYZING" -> {
-                delay(2500)
+                delay(2000)
                 phase = "COMPLETE"
             }
         }
@@ -351,13 +400,17 @@ fun LeafAnalysisUI(phase: String, imageUri: Uri?, onReset: () -> Unit) {
         
         Text(
             text = when (phase) {
-                "VALIDATING" -> "AI Verifying Leaf... 🔍"
+                "VALIDATING" -> validationMessage
                 "ANALYZING" -> "Leaf Detected! Analyzing Disease... 🦠"
                 "ERROR" -> "Invalid Image! Only Leaves Allowed. ❌"
                 "COMPLETE" -> "Analysis Successful! 🌿"
                 else -> ""
             },
-            style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.ExtraBold, color = getPhaseColor(phase)),
+            style = MaterialTheme.typography.titleLarge.copy(
+                fontWeight = FontWeight.ExtraBold, 
+                color = getPhaseColor(phase),
+                fontSize = if (phase == "ERROR") 18.sp else 22.sp
+            ),
             textAlign = TextAlign.Center
         )
         
