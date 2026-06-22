@@ -35,7 +35,7 @@ jobs:
       - name: Upload Selenium Results
         uses: actions/upload-artifact@v4
         with:
-          name: selenium-raw-results
+          name: selenium-web-report
           path: selenium-results/
 
   appium-android-tests:
@@ -59,7 +59,7 @@ jobs:
       - name: Upload Appium Results
         uses: actions/upload-artifact@v4
         with:
-          name: appium-raw-results
+          name: appium-android-report
           path: appium-results/
 
   unit-tests-api:
@@ -83,7 +83,7 @@ jobs:
       - name: Upload API Unit Results
         uses: actions/upload-artifact@v4
         with:
-          name: api-raw-results
+          name: unit-test-report
           path: api-results/
 
   validation-tests:
@@ -107,7 +107,7 @@ jobs:
       - name: Upload Validation Results
         uses: actions/upload-artifact@v4
         with:
-          name: validation-raw-results
+          name: validation-test-report
           path: validation-results/
 
   deployment-status-tests:
@@ -131,7 +131,7 @@ jobs:
       - name: Upload Deployment Results
         uses: actions/upload-artifact@v4
         with:
-          name: deployment-raw-results
+          name: deployment-test-report
           path: deployment-results/
 
   load-testing-performance:
@@ -155,7 +155,7 @@ jobs:
       - name: Upload Performance Results
         uses: actions/upload-artifact@v4
         with:
-          name: performance-raw-results
+          name: load-test-report
           path: performance-results/
 
   compile-master-report:
@@ -169,7 +169,7 @@ jobs:
       - load-testing-performance
     runs-on: ubuntu-latest
     environment:
-      name: production
+      name: github-pages
       url: https://narendra9981.github.io/Agriculture/
     permissions:
       contents: write
@@ -189,41 +189,47 @@ jobs:
       - name: Download Selenium Results
         uses: actions/download-artifact@v4
         with:
-          name: selenium-raw-results
+          name: selenium-web-report
           path: selenium-results
 
       - name: Download Appium Results
         uses: actions/download-artifact@v4
         with:
-          name: appium-raw-results
+          name: appium-android-report
           path: appium-results
 
       - name: Download API Unit Results
         uses: actions/download-artifact@v4
         with:
-          name: api-raw-results
+          name: unit-test-report
           path: api-results
 
       - name: Download Validation Results
         uses: actions/download-artifact@v4
         with:
-          name: validation-raw-results
+          name: validation-test-report
           path: validation-results
 
       - name: Download Deployment Results
         uses: actions/download-artifact@v4
         with:
-          name: deployment-raw-results
+          name: deployment-test-report
           path: deployment-results
 
       - name: Download Performance Results
         uses: actions/download-artifact@v4
         with:
-          name: performance-raw-results
+          name: load-test-report
           path: performance-results
 
       - name: Compile HTML dashboard
         run: python scripts/compile_master_report.py
+
+      - name: Upload Full E2E Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: full-e2e-report
+          path: public/reports/AgriBot_All_1800_Combined.xlsx
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
