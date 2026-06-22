@@ -220,11 +220,17 @@ fun DiseaseDetectionScreen(
     LaunchedEffect(phase) {
         when (phase) {
             "VALIDATING" -> {
-                delay(150)
-                phase = "ANALYZING"
+                delay(2000)
+                // Simulate AI Object Detection: 80% chance it's a leaf, 20% unwanted image
+                val isLeafDetected = (1..100).random() > 20
+                if (isLeafDetected) {
+                    phase = "ANALYZING"
+                } else {
+                    phase = "ERROR"
+                }
             }
             "ANALYZING" -> {
-                delay(200)
+                delay(2500)
                 phase = "COMPLETE"
             }
         }
@@ -303,6 +309,11 @@ fun LeafAnalysisUI(phase: String, imageUri: Uri?, onReset: () -> Unit) {
                 .size(240.dp)
                 .clip(RoundedCornerShape(20.dp))
                 .background(Color.LightGray.copy(alpha = 0.2f))
+                .border(
+                    width = 4.dp,
+                    color = getPhaseColor(phase).copy(alpha = 0.5f),
+                    shape = RoundedCornerShape(20.dp)
+                )
         ) {
             if (imageUri != null) {
                 Image(
@@ -315,9 +326,24 @@ fun LeafAnalysisUI(phase: String, imageUri: Uri?, onReset: () -> Unit) {
             
             if (phase == "VALIDATING" || phase == "ANALYZING") {
                 Box(
-                    modifier = Modifier.fillMaxWidth().height(4.dp).offset(y = scanY.dp)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(4.dp)
+                        .offset(y = scanY.dp)
                         .background(Brush.horizontalGradient(listOf(Color.Transparent, getPhaseColor(phase), Color.Transparent)))
                 )
+            }
+            
+            // Error overlay
+            if (phase == "ERROR") {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.Black.copy(alpha = 0.4f)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(Icons.Default.Block, null, tint = Color.White, modifier = Modifier.size(64.dp))
+                }
             }
         }
         
@@ -335,12 +361,46 @@ fun LeafAnalysisUI(phase: String, imageUri: Uri?, onReset: () -> Unit) {
             textAlign = TextAlign.Center
         )
         
-        if (phase != "COMPLETE") {
+        if (phase == "VALIDATING" || phase == "ANALYZING") {
             LinearProgressIndicator(
-                modifier = Modifier.padding(top = 16.dp).fillMaxWidth().height(8.dp).clip(CircleShape),
+                modifier = Modifier
+                    .padding(top = 16.dp)
+                    .fillMaxWidth()
+                    .height(8.dp)
+                    .clip(CircleShape),
                 color = getPhaseColor(phase),
                 trackColor = getPhaseColor(phase).copy(alpha = 0.1f)
             )
+            
+            Spacer(modifier = Modifier.height(12.dp))
+            Text(
+                text = if (phase == "VALIDATING") "Object Confidence: 94%" else "Detection Confidence: 99.2%",
+                style = MaterialTheme.typography.labelSmall.copy(color = Color.Gray, fontWeight = FontWeight.Bold)
+            )
+        }
+        
+        if (phase == "ERROR") {
+            Spacer(modifier = Modifier.height(24.dp))
+            Button(
+                onClick = onReset,
+                colors = ButtonDefaults.buttonColors(containerColor = AgriRed),
+                shape = RoundedCornerShape(12.dp)
+            ) {
+                Icon(Icons.Default.Refresh, null)
+                Spacer(modifier = Modifier.width(8.dp))
+                Text("Try Another Photo", fontWeight = FontWeight.Bold)
+            }
+        }
+
+        if (phase == "COMPLETE") {
+            Spacer(modifier = Modifier.height(16.dp))
+            OutlinedButton(
+                onClick = onReset,
+                border = BorderStroke(1.dp, AgriGreen),
+                shape = RoundedCornerShape(12.dp)
+            ) {
+                Text("Scan New Leaf", color = AgriGreen, fontWeight = FontWeight.Bold)
+            }
         }
     }
 }
