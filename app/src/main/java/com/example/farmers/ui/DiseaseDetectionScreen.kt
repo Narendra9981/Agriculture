@@ -45,7 +45,6 @@ import androidx.core.content.FileProvider
 import coil.compose.rememberAsyncImagePainter
 import com.example.farmers.ui.theme.*
 import kotlinx.coroutines.delay
-import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color as AndroidColor
 import java.io.File
@@ -225,7 +224,7 @@ fun DiseaseDetectionScreen(
                                 onGallery = { galleryLauncher.launch("image/*") }
                             )
                         } else {
-                            LeafAnalysisUI(phase, selectedImageUri) {
+                            LeafAnalysisUI(phase, selectedImageUri, validationMessage) {
                                 phase = "INITIAL"
                                 selectedImageUri = null
                             }
@@ -282,6 +281,7 @@ fun DiseaseDetectionScreen(
             "ANALYZING" -> {
                 delay(2000)
                 phase = "COMPLETE"
+                onScanComplete()
             }
         }
     }
@@ -344,7 +344,7 @@ fun LeafCaptureUI(onCapture: () -> Unit, onGallery: () -> Unit) {
 }
 
 @Composable
-fun LeafAnalysisUI(phase: String, imageUri: Uri?, onReset: () -> Unit) {
+fun LeafAnalysisUI(phase: String, imageUri: Uri?, validationMessage: String, onReset: () -> Unit) {
     val infiniteTransition = rememberInfiniteTransition(label = "scanning")
     val scanY by infiniteTransition.animateFloat(
         initialValue = 0f,
