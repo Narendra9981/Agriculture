@@ -44,8 +44,24 @@ fun WeatherForecastScreen(
     onProfileClick: () -> Unit = {}
 ) {
     val scrollState = rememberScrollState()
-    val currentWeather = remember { WeatherManager.getCurrentWeather() }
-    val weeklyForecast = remember { WeatherManager.getWeeklyForecast() }
+    var currentWeather by remember { mutableStateOf<WeatherInfo?>(null) }
+    var weeklyForecast by remember { mutableStateOf<List<ForecastDay>>(emptyList()) }
+    var isLoading by remember { mutableStateOf(true) }
+    var isError by remember { mutableStateOf(false) }
+    var retryCount by remember { mutableIntStateOf(0) }
+
+    LaunchedEffect(retryCount) {
+        try {
+            val result = WeatherManager.fetchRealTimeWeather()
+            currentWeather = result.first
+            weeklyForecast = result.second
+            isLoading = false
+            isError = false
+        } catch (e: Exception) {
+            isError = true
+            isLoading = false
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -93,66 +109,90 @@ fun WeatherForecastScreen(
                 )
                 .padding(innerPadding)
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(scrollState)
-                    .padding(16.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                // Current Weather Hero
-                WeatherHeroSection(currentWeather)
-                
-                Spacer(modifier = Modifier.height(28.dp))
-                
-                // 7-Day Forecast
-                Text(
-                    text = "7-Day Forecast",
-                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.ExtraBold, color = AgriDarkGreen),
-                    modifier = Modifier.fillMaxWidth()
-                )
-                Spacer(modifier = Modifier.height(14.dp))
-                WeeklyForecastRow(weeklyForecast)
-                
-                Spacer(modifier = Modifier.height(28.dp))
-                
-                // Farming Weather Insights
-                Text(
-                    text = "AI Farming Insights",
-                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.ExtraBold, color = AgriDarkGreen),
-                    modifier = Modifier.fillMaxWidth()
-                )
-                Spacer(modifier = Modifier.height(14.dp))
-                FarmingWeatherInsights()
-                
-                Spacer(modifier = Modifier.height(28.dp))
-                
-                // AI Advice Card
-                AiWeatherAdviceCard(onChatClick = onChatExpert)
-                
-                Spacer(modifier = Modifier.height(28.dp))
-                
-                // Climate Analytics
-                Text(
-                    text = "Climate Analytics",
-                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.ExtraBold, color = AgriDarkGreen),
-                    modifier = Modifier.fillMaxWidth()
-                )
-                Spacer(modifier = Modifier.height(14.dp))
-                ClimateAnalyticsSection()
-                
-                Spacer(modifier = Modifier.height(28.dp))
-                
-                // Weather Alert Section
-                Text(
-                    text = "Critical Alerts",
-                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.ExtraBold, color = AgriDarkGreen),
-                    modifier = Modifier.fillMaxWidth()
-                )
-                Spacer(modifier = Modifier.height(14.dp))
-                WeatherAlertCard()
-                
-                Spacer(modifier = Modifier.height(48.dp))
+            if (isLoading) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator(color = AgriVibrantGreen)
+                }
+            } else if (isError) {
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Icon(Icons.Default.CloudOff, contentDescription = null, modifier = Modifier.size(64.dp), tint = Color.Gray)
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text("Check your internet connection", fontWeight = FontWeight.Bold, color = Color.Gray)
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Button(onClick = { 
+                        isLoading = true
+                        isError = false
+                        retryCount++
+                    }) {
+                        Text("Retry")
+                    }
+                }
+            } else {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .verticalScroll(scrollState)
+                        .padding(16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    // Current Weather Hero
+                    currentWeather?.let { WeatherHeroSection(it) }
+                    
+                    Spacer(modifier = Modifier.height(28.dp))
+                    
+                    // 7-Day Forecast
+                    Text(
+                        text = "7-Day Forecast",
+                        style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.ExtraBold, color = AgriDarkGreen),
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    Spacer(modifier = Modifier.height(14.dp))
+                    WeeklyForecastRow(weeklyForecast)
+                    
+                    Spacer(modifier = Modifier.height(28.dp))
+                    
+                    // Farming Weather Insights
+                    Text(
+                        text = "AI Farming Insights",
+                        style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.ExtraBold, color = AgriDarkGreen),
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    Spacer(modifier = Modifier.height(14.dp))
+                    FarmingWeatherInsights()
+                    
+                    Spacer(modifier = Modifier.height(28.dp))
+                    
+                    // AI Advice Card
+                    AiWeatherAdviceCard(onChatClick = onChatExpert)
+                    
+                    Spacer(modifier = Modifier.height(28.dp))
+                    
+                    // Climate Analytics
+                    Text(
+                        text = "Climate Analytics",
+                        style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.ExtraBold, color = AgriDarkGreen),
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    Spacer(modifier = Modifier.height(14.dp))
+                    ClimateAnalyticsSection()
+                    
+                    Spacer(modifier = Modifier.height(28.dp))
+                    
+                    // Weather Alert Section
+                    Text(
+                        text = "Critical Alerts",
+                        style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.ExtraBold, color = AgriDarkGreen),
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    Spacer(modifier = Modifier.height(14.dp))
+                    WeatherAlertCard()
+                    
+                    Spacer(modifier = Modifier.height(48.dp))
+                }
             }
         }
     }
