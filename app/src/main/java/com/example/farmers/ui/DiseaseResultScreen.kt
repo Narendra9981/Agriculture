@@ -31,6 +31,7 @@ import com.example.farmers.ui.theme.*
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DiseaseResultScreen(
+    scanResult: ScanResult? = null,
     onBack: () -> Unit = {},
     onScanAnother: () -> Unit = {},
     onChatExpert: () -> Unit = {},
@@ -42,6 +43,14 @@ fun DiseaseResultScreen(
     onProfileClick: () -> Unit = {}
 ) {
     val scrollState = rememberScrollState()
+    
+    // Fallback for preview or missing data
+    val result = scanResult ?: ScanResult(
+        "Tomato", "Early Blight", "Critical Action Required", listOf(
+            Triple("Fungicide", "Apply Chlorothalonil", Icons.Default.Science),
+            Triple("Copper Spray", "Prevent spore spread", Icons.Default.Opacity)
+        )
+    )
 
     Scaffold(
         topBar = {
@@ -97,12 +106,12 @@ fun DiseaseResultScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 // Scanned Crop Preview
-                ScannedImagePreview()
+                ScannedImagePreview(result.cropName)
                 
                 Spacer(modifier = Modifier.height(28.dp))
                 
                 // Main Result Card
-                DiseaseResultCard()
+                DiseaseResultCard(result.diseaseName, result.status)
                 
                 Spacer(modifier = Modifier.height(32.dp))
                 
@@ -113,7 +122,7 @@ fun DiseaseResultScreen(
                     modifier = Modifier.fillMaxWidth()
                 )
                 Spacer(modifier = Modifier.height(14.dp))
-                TreatmentSuggestionsRow()
+                TreatmentSuggestionsRow(result.treatments)
                 
                 Spacer(modifier = Modifier.height(32.dp))
                 
@@ -143,7 +152,7 @@ fun DiseaseResultScreen(
 }
 
 @Composable
-fun ScannedImagePreview() {
+fun ScannedImagePreview(cropName: String) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Box(
             modifier = Modifier
@@ -171,12 +180,12 @@ fun ScannedImagePreview() {
             text = "AI Scan Successfully Completed ✅",
             style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.ExtraBold, color = AgriVibrantGreen)
         )
-        Text(text = "Tomato Leaf Detected", style = MaterialTheme.typography.bodyMedium.copy(color = AgriGreen, fontWeight = FontWeight.Bold))
+        Text(text = "$cropName Leaf Detected", style = MaterialTheme.typography.bodyMedium.copy(color = AgriGreen, fontWeight = FontWeight.Bold))
     }
 }
 
 @Composable
-fun DiseaseResultCard() {
+fun DiseaseResultCard(diseaseName: String, status: String) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(32.dp),
@@ -189,7 +198,7 @@ fun DiseaseResultCard() {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "Leaf Blight Detected",
+                text = "$diseaseName Detected",
                 style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.ExtraBold, color = AgriRed)
             )
             
@@ -209,7 +218,7 @@ fun DiseaseResultCard() {
                         .background(AgriRed.copy(alpha = 0.15f), RoundedCornerShape(12.dp))
                         .padding(horizontal = 14.dp, vertical = 6.dp)
                 ) {
-                    Text(text = "Severity: High", style = MaterialTheme.typography.labelLarge.copy(color = AgriRed, fontWeight = FontWeight.ExtraBold))
+                    Text(text = "Status: $status", style = MaterialTheme.typography.labelLarge.copy(color = AgriRed, fontWeight = FontWeight.ExtraBold))
                 }
             }
             
@@ -226,20 +235,19 @@ fun DiseaseResultCard() {
 }
 
 @Composable
-fun TreatmentSuggestionsRow() {
-    val suggestions = listOf(
-        TreatmentItem("Pesticide", "Copper Fungicide", Icons.Default.Science, AgriBlue),
-        TreatmentItem("Organic", "Neem Oil Spray", Icons.Default.Eco, AgriVibrantGreen),
-        TreatmentItem("Water", "Reduced Humidity", Icons.Default.WaterDrop, Color(0xFF00B0FF))
-    )
-    
+fun TreatmentSuggestionsRow(treatments: List<Triple<String, String, ImageVector>>) {
     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-        suggestions.forEach { item ->
+        treatments.forEach { (label, value, icon) ->
+            val color = when(label) {
+                "Pesticide", "Fungicide" -> AgriBlue
+                "Organic", "Neem Oil" -> AgriVibrantGreen
+                else -> Color(0xFF00B0FF)
+            }
             Surface(
                 modifier = Modifier.weight(1f).height(120.dp),
                 shape = RoundedCornerShape(24.dp),
                 color = Color.White,
-                border = BorderStroke(2.dp, item.color.copy(alpha = 0.2f)),
+                border = BorderStroke(2.dp, color.copy(alpha = 0.2f)),
                 shadowElevation = 4.dp
             ) {
                 Column(
@@ -247,19 +255,19 @@ fun TreatmentSuggestionsRow() {
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
-                    Box(modifier = Modifier.size(40.dp).background(item.color.copy(alpha = 0.15f), CircleShape), contentAlignment = Alignment.Center) {
-                        Icon(item.icon, contentDescription = null, tint = item.color, modifier = Modifier.size(24.dp))
+                    Box(modifier = Modifier.size(40.dp).background(color.copy(alpha = 0.15f), CircleShape), contentAlignment = Alignment.Center) {
+                        Icon(icon, contentDescription = null, tint = color, modifier = Modifier.size(24.dp))
                     }
                     Spacer(modifier = Modifier.height(10.dp))
-                    Text(text = item.label, style = MaterialTheme.typography.labelSmall.copy(color = Color.Gray, fontWeight = FontWeight.Bold))
-                    Text(text = item.value, style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.ExtraBold, color = item.color), textAlign = TextAlign.Center)
+                    Text(text = label, style = MaterialTheme.typography.labelSmall.copy(color = Color.Gray, fontWeight = FontWeight.Bold))
+                    Text(text = value, style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.ExtraBold, color = color), textAlign = TextAlign.Center)
                 }
             }
         }
     }
 }
 
-data class TreatmentItem(val label: String, val value: String, val icon: ImageVector, val color: Color)
+
 
 @Composable
 fun HealthStatusSection() {

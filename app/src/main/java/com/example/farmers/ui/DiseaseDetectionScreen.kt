@@ -63,7 +63,7 @@ data class ScanResult(
 @Composable
 fun DiseaseDetectionScreen(
     onBack: () -> Unit = {},
-    onScanComplete: () -> Unit = {},
+    onScanComplete: (ScanResult) -> Unit = {},
     onHomeClick: () -> Unit = {},
     onChatClick: () -> Unit = {},
     onScanClick: () -> Unit = {},
@@ -345,7 +345,7 @@ fun DiseaseDetectionScreen(
             "ANALYZING" -> {
                 delay(2000)
                 phase = "COMPLETE"
-                onScanComplete()
+                detectedResult?.let { onScanComplete(it) }
             }
         }
     }

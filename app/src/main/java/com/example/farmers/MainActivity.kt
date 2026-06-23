@@ -34,6 +34,7 @@ class MainActivity : ComponentActivity() {
             FarmersTheme {
                 var currentScreen by remember { mutableStateOf(Screen.Splash) }
                 var selectedSchemeName by remember { mutableStateOf("PM-Kisan Nidhi") }
+                var latestScanResult by remember { mutableStateOf<ScanResult?>(null) }
 
                 LaunchedEffect(Unit) {
                     delay(800) // Shortened splash delay
@@ -123,7 +124,10 @@ class MainActivity : ComponentActivity() {
                         )
                         Screen.DiseaseDetection -> DiseaseDetectionScreen(
                             onBack = { currentScreen = Screen.HomeDashboard },
-                            onScanComplete = { currentScreen = Screen.DiseaseResult },
+                            onScanComplete = { result -> 
+                                latestScanResult = result
+                                currentScreen = Screen.DiseaseResult 
+                            },
                             onHomeClick = { currentScreen = Screen.HomeDashboard },
                             onChatClick = { currentScreen = Screen.AiChatbot },
                             onScanClick = { currentScreen = Screen.DiseaseDetection },
@@ -132,6 +136,7 @@ class MainActivity : ComponentActivity() {
                             onProfileClick = { currentScreen = Screen.UserProfile }
                         )
                         Screen.DiseaseResult -> DiseaseResultScreen(
+                            scanResult = latestScanResult,
                             onBack = { currentScreen = Screen.DiseaseDetection },
                             onScanAnother = { currentScreen = Screen.DiseaseDetection },
                             onChatExpert = { currentScreen = Screen.AiChatbot },
