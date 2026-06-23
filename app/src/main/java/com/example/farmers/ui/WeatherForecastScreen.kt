@@ -28,6 +28,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.farmers.ui.theme.*
+import com.example.farmers.data.WeatherManager
+import com.example.farmers.data.ForecastDay
+import com.example.farmers.data.WeatherInfo
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -41,6 +44,8 @@ fun WeatherForecastScreen(
     onProfileClick: () -> Unit = {}
 ) {
     val scrollState = rememberScrollState()
+    val currentWeather = remember { WeatherManager.getCurrentWeather() }
+    val weeklyForecast = remember { WeatherManager.getWeeklyForecast() }
 
     Scaffold(
         topBar = {
@@ -96,7 +101,7 @@ fun WeatherForecastScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 // Current Weather Hero
-                WeatherHeroSection()
+                WeatherHeroSection(currentWeather)
                 
                 Spacer(modifier = Modifier.height(28.dp))
                 
@@ -107,7 +112,7 @@ fun WeatherForecastScreen(
                     modifier = Modifier.fillMaxWidth()
                 )
                 Spacer(modifier = Modifier.height(14.dp))
-                WeeklyForecastRow()
+                WeeklyForecastRow(weeklyForecast)
                 
                 Spacer(modifier = Modifier.height(28.dp))
                 
@@ -154,7 +159,7 @@ fun WeatherForecastScreen(
 }
 
 @Composable
-fun WeatherHeroSection() {
+fun WeatherHeroSection(weather: WeatherInfo) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(32.dp),
@@ -173,21 +178,21 @@ fun WeatherHeroSection() {
             ) {
                 Column {
                     Text(
-                        text = "Ludhiana, Punjab",
+                        text = weather.location,
                         style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.ExtraBold, color = AgriDarkGreen)
                     )
                     Text(
-                        text = "Tuesday, 15 April",
+                        text = weather.date,
                         style = MaterialTheme.typography.bodyLarge.copy(color = AgriGreen, fontWeight = FontWeight.Bold)
                     )
                 }
-                Icon(Icons.Default.WbSunny, contentDescription = null, tint = AgriOrange, modifier = Modifier.size(56.dp))
+                Icon(weather.icon, contentDescription = null, tint = AgriOrange, modifier = Modifier.size(56.dp))
             }
             
             Spacer(modifier = Modifier.height(20.dp))
             
             Text(
-                text = "32°C",
+                text = weather.temperature,
                 style = MaterialTheme.typography.headlineLarge.copy(
                     fontSize = 72.sp,
                     fontWeight = FontWeight.ExtraBold,
@@ -195,7 +200,7 @@ fun WeatherHeroSection() {
                 )
             )
             Text(
-                text = "Mostly Sunny",
+                text = weather.condition,
                 style = MaterialTheme.typography.headlineSmall.copy(color = AgriGreen, fontWeight = FontWeight.Bold)
             )
             
@@ -205,9 +210,9 @@ fun WeatherHeroSection() {
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceAround
             ) {
-                WeatherStatItem("Humidity", "45%", Icons.Default.WaterDrop, AgriBlue)
-                WeatherStatItem("Wind", "12 km/h", Icons.Default.Air, Color(0xFF455A64))
-                WeatherStatItem("UV Index", "6 (Med)", Icons.Default.WbSunny, AgriOrange)
+                WeatherStatItem("Humidity", weather.humidity, Icons.Default.WaterDrop, AgriBlue)
+                WeatherStatItem("Wind", weather.wind, Icons.Default.Air, Color(0xFF455A64))
+                WeatherStatItem("UV Index", weather.uvIndex, Icons.Default.WbSunny, AgriOrange)
             }
         }
     }
@@ -223,18 +228,10 @@ fun WeatherStatItem(label: String, value: String, icon: ImageVector, color: Colo
     }
 }
 
-data class ForecastDay(val name: String, val icon: ImageVector, val temp: String, val rain: String)
+
 
 @Composable
-fun WeeklyForecastRow() {
-    val days = listOf(
-        ForecastDay("Wed", Icons.Default.WbSunny, "31°/22°", "5%"),
-        ForecastDay("Thu", Icons.Default.WbCloudy, "29°/20°", "15%"),
-        ForecastDay("Fri", Icons.Default.CloudQueue, "28°/19°", "40%"),
-        ForecastDay("Sat", Icons.Default.Thunderstorm, "25°/18°", "80%"),
-        ForecastDay("Sun", Icons.Default.WbCloudy, "27°/19°", "30%")
-    )
-    
+fun WeeklyForecastRow(days: List<ForecastDay>) {
     LazyRow(horizontalArrangement = Arrangement.spacedBy(14.dp)) {
         items(days) { day ->
             Surface(
