@@ -31,6 +31,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.farmers.ui.theme.*
 import com.example.farmers.data.FirebaseManager
+import com.example.farmers.data.CropRecommendationManager
+import com.example.farmers.data.RecommendedCrop
 import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -64,6 +66,7 @@ fun CropRecommendationScreen(
     var isAnalyzing by remember { mutableStateOf(false) }
     var showResult by remember { mutableStateOf(false) }
     var isReasonExpanded by remember { mutableStateOf(false) }
+    var currentRecommendation by remember { mutableStateOf<RecommendedCrop?>(null) }
     
     val scrollState = rememberScrollState()
 
@@ -207,7 +210,12 @@ fun CropRecommendationScreen(
                 
                 LaunchedEffect(isAnalyzing) {
                     if (isAnalyzing) {
-                        delay(200)
+                        // AI Model Simulation
+                        currentRecommendation = CropRecommendationManager.recommendCrop(
+                            nitrogen, phosphorus, potassium, phValue, temperature, humidity, rainfall
+                        )
+                        
+                        delay(2000) // Realistic analysis delay
                         isAnalyzing = false
                         showResult = true
                         scrollState.animateScrollTo(1000)
@@ -216,10 +224,13 @@ fun CropRecommendationScreen(
                 
                 if (showResult) {
                     Spacer(modifier = Modifier.height(36.dp))
-                    RecommendationResultCard(
-                        isReasonExpanded = isReasonExpanded,
-                        onReasonToggle = { isReasonExpanded = !isReasonExpanded }
-                    )
+                    currentRecommendation?.let { recommendation ->
+                        RecommendationResultCard(
+                            crop = recommendation,
+                            isReasonExpanded = isReasonExpanded,
+                            onReasonToggle = { isReasonExpanded = !isReasonExpanded }
+                        )
+                    }
                     
                     Spacer(modifier = Modifier.height(28.dp))
                     SmartFarmingInsights()
@@ -412,7 +423,7 @@ fun LocationSeasonCard(
 }
 
 @Composable
-fun RecommendationResultCard(isReasonExpanded: Boolean, onReasonToggle: () -> Unit) {
+fun RecommendationResultCard(crop: RecommendedCrop, isReasonExpanded: Boolean, onReasonToggle: () -> Unit) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(32.dp),
@@ -434,21 +445,21 @@ fun RecommendationResultCard(isReasonExpanded: Boolean, onReasonToggle: () -> Un
             Spacer(modifier = Modifier.height(20.dp))
             
             Text(
-                text = "Best Match: Wheat (Malwa Shakti)",
+                text = "Best Match: ${crop.name}",
                 style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.ExtraBold, color = AgriDarkGreen)
             )
             
             Text(
-                text = "98.5% Suitability Score",
+                text = "${crop.score}% Suitability Score",
                 style = MaterialTheme.typography.titleLarge.copy(color = Color(0xFFFFA000), fontWeight = FontWeight.ExtraBold)
             )
             
             Spacer(modifier = Modifier.height(24.dp))
             
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceAround) {
-                SharedResultInfoItem("Yield", "4.5 t/ha", Icons.AutoMirrored.Filled.TrendingUp)
-                SharedResultInfoItem("Water", "Medium", Icons.Default.WaterDrop)
-                SharedResultInfoItem("Season", "Rabi", Icons.Default.WbSunny)
+                SharedResultInfoItem("Yield", crop.yield, Icons.AutoMirrored.Filled.TrendingUp)
+                SharedResultInfoItem("Water", crop.water, Icons.Default.WaterDrop)
+                SharedResultInfoItem("Season", crop.season, Icons.Default.WbSunny)
             }
             
             Spacer(modifier = Modifier.height(28.dp))
@@ -471,7 +482,7 @@ fun RecommendationResultCard(isReasonExpanded: Boolean, onReasonToggle: () -> Un
             AnimatedVisibility(visible = isReasonExpanded) {
                 Column(modifier = Modifier.padding(top = 18.dp)) {
                     Text(
-                        text = "AI Analysis: Your soil pH (6.5) and high Nitrogen content are ideal for Wheat. The current Rabi season temperature (20-25°C) will maximize yield by 15%.",
+                        text = crop.reason,
                         style = MaterialTheme.typography.bodyMedium.copy(color = AgriGreen, fontWeight = FontWeight.Bold, lineHeight = 20.sp),
                         textAlign = TextAlign.Center
                     )
