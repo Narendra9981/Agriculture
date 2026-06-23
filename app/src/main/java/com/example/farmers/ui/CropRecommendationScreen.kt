@@ -1,5 +1,6 @@
 package com.example.farmers.ui
 
+import android.widget.Toast
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.BorderStroke
@@ -69,6 +70,7 @@ fun CropRecommendationScreen(
     var currentRecommendation by remember { mutableStateOf<RecommendedCrop?>(null) }
     
     val scrollState = rememberScrollState()
+    val context = androidx.compose.ui.platform.LocalContext.current
 
     Scaffold(
         topBar = {
@@ -177,18 +179,24 @@ fun CropRecommendationScreen(
                 // Analyze Button
                 Button(
                     onClick = { 
-                        isAnalyzing = true 
-                        // Save data to Firebase
-                        val soilData = mapOf(
-                            "N" to nitrogen,
-                            "P" to phosphorus,
-                            "K" to potassium,
-                            "pH" to phValue,
-                            "Temp" to temperature,
-                            "Humidity" to humidity,
-                            "Rainfall" to rainfall
-                        )
-                        FirebaseManager.saveSoilData("guest_user", soilData)
+                        if (nitrogen.isBlank() || phosphorus.isBlank() || potassium.isBlank() || 
+                            phValue.isBlank() || temperature.isBlank() || humidity.isBlank() || rainfall.isBlank()) {
+                            Toast.makeText(context, "Please enter all details to get an AI recommendation", Toast.LENGTH_SHORT).show()
+                        } else {
+                            showResult = false // Reset old results
+                            isAnalyzing = true 
+                            // Save data to Firebase
+                            val soilData = mapOf(
+                                "N" to nitrogen,
+                                "P" to phosphorus,
+                                "K" to potassium,
+                                "pH" to phValue,
+                                "Temp" to temperature,
+                                "Humidity" to humidity,
+                                "Rainfall" to rainfall
+                            )
+                            FirebaseManager.saveSoilData("guest_user", soilData)
+                        }
                     },
                     modifier = Modifier
                         .fillMaxWidth()
