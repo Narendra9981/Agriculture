@@ -52,6 +52,13 @@ import java.io.InputStream
 import java.text.SimpleDateFormat
 import java.util.*
 
+data class ScanResult(
+    val cropName: String,
+    val diseaseName: String,
+    val status: String,
+    val treatments: List<Triple<String, String, ImageVector>>
+)
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DiseaseDetectionScreen(
@@ -69,6 +76,7 @@ fun DiseaseDetectionScreen(
     var tempPhotoUri by rememberSaveable { mutableStateOf<Uri?>(null) }
     
     var validationMessage by remember { mutableStateOf("Initializing scanner...") }
+    var detectedResult by remember { mutableStateOf<ScanResult?>(null) }
     
     val scrollState = rememberScrollState()
     val context = LocalContext.current
@@ -85,26 +93,36 @@ fun DiseaseDetectionScreen(
             var greenPixels = 0
             val totalPixels = bitmap.width * bitmap.height
             
-            // Scan pixels for green range
-            for (x in 0 until bitmap.width step 2) {
-                for (y in 0 until bitmap.height step 2) {
+            // Scan pixels for green range AND edge density
+            var contrastSum = 0
+            for (x in 2 until bitmap.width - 2 step 4) {
+                for (y in 2 until bitmap.height - 2 step 4) {
                     val pixel = bitmap.getPixel(x, y)
                     val r = AndroidColor.red(pixel)
                     val g = AndroidColor.green(pixel)
                     val b = AndroidColor.blue(pixel)
                     
-                    // Simple Green detection heuristic: Green is the dominant color
+                    // Simple Green detection heuristic
                     if (g > r && g > b && g > 40) {
                         greenPixels++
                     }
+                    
+                    // Contrast/Edge check: Compare with neighbor to detect "patterns" vs flat color
+                    val neighbor = bitmap.getPixel(x + 2, y)
+                    val diff = Math.abs(AndroidColor.green(neighbor) - g)
+                    contrastSum += diff
                 }
             }
             
-            val greenPercentage = (greenPixels.toFloat() / (totalPixels / 4)) * 100
+            val totalSampled = (bitmap.width / 4) * (bitmap.height / 4)
+            val greenPercentage = (greenPixels.toFloat() / totalSampled) * 100
+            val averageContrast = contrastSum.toFloat() / totalSampled
+            
             bitmap.recycle()
             
-            // Rejects if less than 12% of the image is green (Not a leaf)
-            greenPercentage > 12.0
+            // "Green color photo dont analyze" - If it's too flat (contrast < 5), it's just a green wall/photo
+            // Real leaves have veins and textures that create contrast (> 8)
+            greenPercentage > 15.0 && averageContrast > 8.0
         } catch (e: Exception) {
             false
         }
@@ -237,9 +255,11 @@ fun DiseaseDetectionScreen(
                 // Results section with Fertilizer (Only show if complete)
                 AnimatedVisibility(visible = phase == "COMPLETE") {
                     Column {
-                        LeafResultSection()
-                        Spacer(modifier = Modifier.height(24.dp))
-                        FertilizerRecommendationSection()
+                        detectedResult?.let { result ->
+                            LeafResultSection(result)
+                            Spacer(modifier = Modifier.height(24.dp))
+                            FertilizerRecommendationSection(result)
+                        }
                     }
                 }
 
@@ -271,10 +291,28 @@ fun DiseaseDetectionScreen(
                 
                 if (isLeaf) {
                     validationMessage = "Leaf Verified! High confidence."
+                    
+                    // Mock Specific Selection based on scan session
+                    val possibleResults = listOf(
+                        ScanResult("Chili", "Leaf Curl Virus", "Moderate Infection", listOf(
+                            Triple("Pesticide", "Controls Aphids/Thrips", Icons.Default.BugReport),
+                            Triple("Neem Oil", "Organic prevention", Icons.Default.Opacity)
+                        )),
+                        ScanResult("Brinjal", "Little Leaf Disease", "Early Stage", listOf(
+                            Triple("Antibiotics", "Tetracycline treatment", Icons.Default.Medication),
+                            Triple("Pruning", "Remove infected branches", Icons.Default.ContentCut)
+                        )),
+                        ScanResult("Tomato", "Early Blight", "Critical Action Required", listOf(
+                            Triple("Fungicide", "Apply Chlorothalonil", Icons.Default.Science),
+                            Triple("Copper Spray", "Prevent spore spread", Icons.Default.Opacity)
+                        ))
+                    )
+                    detectedResult = possibleResults.random()
+                    
                     delay(500)
                     phase = "ANALYZING"
                 } else {
-                    validationMessage = "Error: No botanical patterns found."
+                    validationMessage = "Rejected: No botanical patterns found."
                     phase = "ERROR"
                 }
             }
@@ -460,7 +498,7 @@ fun LeafAnalysisUI(phase: String, imageUri: Uri?, validationMessage: String, onR
 }
 
 @Composable
-fun LeafResultSection() {
+fun LeafResultSection(result: ScanResult) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(24.dp),
@@ -471,15 +509,15 @@ fun LeafResultSection() {
             Icon(Icons.Default.Warning, null, tint = AgriOrange, modifier = Modifier.size(40.dp))
             Spacer(modifier = Modifier.width(16.dp))
             Column {
-                Text("Disease Detected: Leaf Spot", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.ExtraBold, color = Color(0xFFE65100)))
-                Text("Status: Moderate Infection", style = MaterialTheme.typography.bodySmall.copy(color = Color(0xFFEF6C00), fontWeight = FontWeight.Bold))
+                Text("${result.cropName} Disease: ${result.diseaseName}", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.ExtraBold, color = Color(0xFFE65100)))
+                Text("Status: ${result.status}", style = MaterialTheme.typography.bodySmall.copy(color = Color(0xFFEF6C00), fontWeight = FontWeight.Bold))
             }
         }
     }
 }
 
 @Composable
-fun FertilizerRecommendationSection() {
+fun FertilizerRecommendationSection(result: ScanResult) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(24.dp),
@@ -496,8 +534,9 @@ fun FertilizerRecommendationSection() {
             Spacer(modifier = Modifier.height(16.dp))
             
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                TreatmentItem("High-Potash", "Strengthens leaf immunity", Icons.Default.AddModerator, Modifier.weight(1f))
-                TreatmentItem("Copper Spray", "Prevents fungal spread", Icons.Default.Opacity, Modifier.weight(1f))
+                result.treatments.forEach { (name, desc, icon) ->
+                    TreatmentItem(name, desc, icon, Modifier.weight(1f))
+                }
             }
             
             Spacer(modifier = Modifier.height(16.dp))
@@ -508,7 +547,7 @@ fun FertilizerRecommendationSection() {
                 color = Color.White.copy(alpha = 0.5f)
             ) {
                 Text(
-                    text = "Tip: Apply during morning hours for 20% better absorption.",
+                    text = "Tip: ${result.cropName} crops need moisture-controlled application.",
                     modifier = Modifier.padding(12.dp),
                     style = MaterialTheme.typography.bodySmall.copy(color = AgriGreen, fontWeight = FontWeight.Bold)
                 )
