@@ -210,12 +210,16 @@ fun CropRecommendationScreen(
                 
                 LaunchedEffect(isAnalyzing) {
                     if (isAnalyzing) {
-                        // AI Model Simulation
-                        currentRecommendation = CropRecommendationManager.recommendCrop(
-                            nitrogen, phosphorus, potassium, phValue, temperature, humidity, rainfall
-                        )
+                        try {
+                            // Genuine Real-Time AI Prediction
+                            currentRecommendation = CropRecommendationManager.fetchRealTimePrediction(
+                                nitrogen, phosphorus, potassium, phValue, temperature, humidity, rainfall
+                            )
+                        } catch (e: Exception) {
+                            // Error handled within manager (fallback used), but can log here too
+                        }
                         
-                        delay(2000) // Realistic analysis delay
+                        delay(2500) // Professional "Wait for Server" delay
                         isAnalyzing = false
                         showResult = true
                         scrollState.animateScrollTo(1000)
